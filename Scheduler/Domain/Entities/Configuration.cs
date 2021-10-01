@@ -1,28 +1,24 @@
 ﻿using Domain.Enums;
-using Domain.Interfaz;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Domain.Entities
 {
-    public class Configuration: IConfiguration
+    public class Configuration
     {
-        public bool IsEnable { get; private set; }
-        public ConfigurationType Type { get; private set; }
-        public DateTime DateTime { get; private set; }
-        public Occur Occur { get; private set; }
-        public int Every { get; private set; }
+        public bool IsEnable { get;  set; }
+        public ConfigurationType Type { get;  set; }
+        public DateTime DateTime { get;  set; }
+        public Occur Occur { get;  set; }
+        public int Every { get;  set; }
+        public Limit Limit { get;  set; }
 
-        public Configuration(DateTime dateTime, bool isEnable, ConfigurationType type, Occur occur, int every) 
+        public DateTime StartDateLimit 
         {
-            this.IsEnable = isEnable;
-            this.Type = type;
-            this.DateTime = dateTime;
-            this.Occur = occur;
-            this.Every = every;
+            get => this.Limit.StartDate;
+        }
+        public DateTime? EndDateLimit
+        {
+            get => this.Limit.EndDate;
         }
     }
 }

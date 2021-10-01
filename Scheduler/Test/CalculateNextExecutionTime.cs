@@ -1,5 +1,4 @@
 using Domain.Entities;
-using Domain.Interfaz;
 using System;
 using Xunit;
 
@@ -9,29 +8,50 @@ namespace Test
     {
         public static readonly DateTime CurrentDate = new DateTime(2020,01,04);
         public static readonly DateTime DateTimeConfiguration = new DateTime(2020, 01, 08,14,00,00);
-        public static readonly ILimit Limit = new Limit(new DateTime(2020, 01, 01), null);
+        public static readonly Limit Limit = new Limit { StartDate = new DateTime(2020, 01, 01), EndDate = null };
 
 
         [Fact]
         public void calculate_type_once()
         {
-            IConfiguration configuration = new Configuration(DateTimeConfiguration, true, Domain.Enums.ConfigurationType.Once,Domain.Enums.Occur.Daily, 0);
-            ICalculating calcular = new DateIn(CurrentDate);
+     
+            Configuration configuration = new Configuration
+            {
+                DateTime = DateTimeConfiguration,
+                IsEnable = true,
+                Type = Domain.Enums.ConfigurationType.Once,
+                Occur = Domain.Enums.Occur.Daily,
+                Every = 0,
+                Limit = Limit
+            };
 
-            IDate date = calcular.Calculate(configuration, Limit);
+            Date currentDate = new Date { DateTime = CurrentDate };
+            Scheduler calcular = new Scheduler(currentDate);
 
-            Assert.True(date.Date == DateTimeConfiguration);
+            Date date = calcular.Calculate(configuration);
+
+            Assert.True(date.DateTime == DateTimeConfiguration);
         }
 
         [Fact]
         public void calculate_type_recurring()
         {
-            IConfiguration configuration = new Configuration(DateTime.Now, true, Domain.Enums.ConfigurationType.Recurring, Domain.Enums.Occur.Daily, 1);
-            ICalculating calcular = new DateIn(CurrentDate);
+            Configuration configuration = new Configuration
+            {
+                DateTime = DateTime.Now,
+                IsEnable = true,
+                Type = Domain.Enums.ConfigurationType.Recurring,
+                Occur = Domain.Enums.Occur.Daily,
+                Every = 1,
+                Limit = Limit
+            };
 
-            IDate date = calcular.Calculate(configuration, Limit);
+            Date currentDate = new Date { DateTime = CurrentDate };
+            Scheduler calcular = new Scheduler(currentDate);
 
-            Assert.True(date.Date ==  new DateTime(2020,01,05));
+            Date date = calcular.Calculate(configuration);
+
+            Assert.True(date.DateTime ==  new DateTime(2020,01,05));
         }
     }
 }

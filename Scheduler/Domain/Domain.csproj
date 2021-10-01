@@ -42,15 +42,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Entities\Configuration.cs" />
-    <Compile Include="Entities\DateIn.cs" />
+    <Compile Include="Entities\Scheduler.cs" />
     <Compile Include="Entities\Limit.cs" />
-    <Compile Include="Entities\DateOut.cs" />
+    <Compile Include="Entities\Date.cs" />
     <Compile Include="Enums\ConfigurationType.cs" />
     <Compile Include="Enums\Occur.cs" />
-    <Compile Include="Interfaz\IConfiguration.cs" />
-    <Compile Include="Interfaz\ILimit.cs" />
-    <Compile Include="Interfaz\IDate.cs" />
-    <Compile Include="Interfaz\ICalculator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup />
