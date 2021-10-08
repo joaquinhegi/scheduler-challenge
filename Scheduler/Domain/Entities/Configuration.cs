@@ -11,6 +11,9 @@ namespace Domain.Entities
         public Occur Occur { get;  set; }
         public int Every { get;  set; }
         public Limit Limit { get;  set; }
+        public WeeklyFrecuency WeeklyFrecuency { get; set; }
+        public DailyFrecuency DailyFrecuency { get; set; }
+
 
         public DateTime StartDateLimit 
         {

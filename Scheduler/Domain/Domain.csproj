@@ -33,6 +33,7 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -41,12 +42,18 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Entities\DailyFrecuency.cs" />
+    <Compile Include="Entities\WeeklyFrecuency.cs" />
     <Compile Include="Entities\Configuration.cs" />
     <Compile Include="Entities\Scheduler.cs" />
     <Compile Include="Entities\Limit.cs" />
     <Compile Include="Entities\Date.cs" />
+    <Compile Include="Enums\TimeInterval.cs" />
     <Compile Include="Enums\ConfigurationType.cs" />
     <Compile Include="Enums\Occur.cs" />
+    <Compile Include="Exceptions\DailyFrecuencyException.cs" />
+    <Compile Include="Exceptions\OccurExeption.cs" />
+    <Compile Include="Exceptions\LimitExeption.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup />
