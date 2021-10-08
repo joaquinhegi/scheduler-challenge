@@ -1,6 +1,6 @@
-Scheduler\Domain\bin
-Scheduler\Domain\obj
-Scheduler\Test\bin
-Scheduler\Test\obj
-Scheduler\.vs
+Scheduler/Domain/bin/
+Scheduler/Domain/obj/
+Scheduler/Test/bin/
+Scheduler/Test/obj/
+Scheduler/.vs
 .vs
