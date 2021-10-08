@@ -25,16 +25,18 @@ namespace Test
                 Every = 0,
                 Limit = Limit
             };
-            Date currentDate = new Date { DateTime = CurrentDate };
+            DateIn currentDate = new DateIn { DateTime = CurrentDate };
             Scheduler calcular = new Scheduler(currentDate);
 
-            Date date = calcular.CalculateDateOutput(configuration);
+            DateOut date = calcular.CalculateDateOutput(configuration);
             using (new AssertionScope())
             {
                 date.DateTime.Should().Be(DateTimeConfiguration);
                 date.Description.Should().Contain("Occurs once");
             }
         }
+     
+     
         [Fact]
         public void calculate_type_recurring_every_one()
         {
@@ -48,10 +50,10 @@ namespace Test
                 Limit = Limit
             };
 
-            Date currentDate = new Date { DateTime = CurrentDate };
+            DateIn currentDate = new DateIn { DateTime = CurrentDate };
             Scheduler calcular = new Scheduler(currentDate);
 
-            Date date = calcular.CalculateDateOutput(configuration);
+            DateOut date = calcular.CalculateDateOutput(configuration);
 
             using (new AssertionScope())
             {
@@ -72,10 +74,10 @@ namespace Test
                 Limit = Limit
             };
 
-            Date currentDate = new Date { DateTime = CurrentDate };
+            DateIn currentDate = new DateIn { DateTime = CurrentDate };
             Scheduler calcular = new Scheduler(currentDate);
 
-            Date date = calcular.CalculateDateOutput(configuration);
+            DateOut date = calcular.CalculateDateOutput(configuration);
 
             using (new AssertionScope())
             {
@@ -96,10 +98,10 @@ namespace Test
                 Limit = Limit
             };
 
-            Date currentDate = new Date { DateTime = CurrentDate };
+            DateIn currentDate = new DateIn { DateTime = CurrentDate };
             Scheduler calcular = new Scheduler(currentDate);
 
-            Date date = calcular.CalculateDateOutput(configuration);
+            DateOut date = calcular.CalculateDateOutput(configuration);
             using (new AssertionScope())
             {
                 date.DateTime.Should().Be(7.January(2020));
@@ -119,10 +121,10 @@ namespace Test
                 Limit = Limit
             };
 
-            Date currentDate = new Date { DateTime = CurrentDate };
+            DateIn currentDate = new DateIn { DateTime = CurrentDate };
             Scheduler calcular = new Scheduler(currentDate);
 
-            Date date = calcular.CalculateDateOutput(configuration);
+            DateOut date = calcular.CalculateDateOutput(configuration);
             using (new AssertionScope())
             {
                 date.DateTime.Should().Be(8.January(2020));

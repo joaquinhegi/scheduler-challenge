@@ -6,16 +6,16 @@ namespace Domain.Entities
 {
     public class Scheduler
     {
-        public Date DateInput  {get; private set;}
+        public DateIn DateInput  {get; private set;}
 
         public Configuration Configuration { get; private set; }
 
-        public Scheduler(Date currentDate) 
+        public Scheduler(DateIn currentDate) 
         {
             this.DateInput = currentDate;
         }
 
-        public Date CalculateDateOutput(Configuration Configuration)
+        public DateOut CalculateDateOutput(Configuration Configuration)
         {
             this.Configuration = Configuration;
 
@@ -24,16 +24,16 @@ namespace Domain.Entities
             if (this.Configuration.DailyFrecuency != null)
             {
                 DailyFrecuency dailyFrecuency = Configuration.DailyFrecuency;
+                this.checkDay(this.DateInput.DateTime, Configuration.WeeklyFrecuency);
                 return this.calculateDailyFecuency(this.DateInput.DateTime, dailyFrecuency);
             }
             else
             {
                 return this.calcute();
-            }
-               
+            }              
         }
 
-        private Date calcute()
+        private DateOut calcute()
         {
             string description;
             DateTime date;
@@ -50,7 +50,7 @@ namespace Domain.Entities
                     $"Schedule will be used on {date:d} at { date:t} starting on {this.Configuration.StartDateLimit:d}";
            
             }
-            return new Date { DateTime = date, Description = description };
+            return new DateOut { DateTime = date, Description = description };
 
         }
 
@@ -69,11 +69,11 @@ namespace Domain.Entities
             }
         }
 
-        private Date calculateDailyFecuency(DateTime CurrentDate, DailyFrecuency ConfDailyFrecuency) 
+        private DateOut calculateDailyFecuency(DateTime CurrentDate, DailyFrecuency ConfDailyFrecuency) 
         {
             if (ConfDailyFrecuency.OnceAtValue != TimeSpan.Zero)
             {
-                return new Date
+                return new DateOut
                 {
                     DateTime = CurrentDate.Add(ConfDailyFrecuency.OnceAtValue),
                     Description = $"{ConfDailyFrecuency.OnceAtValue} between {ConfDailyFrecuency.Starting} and {ConfDailyFrecuency.End} starting on {CurrentDate:d}"
@@ -81,8 +81,9 @@ namespace Domain.Entities
             }
             else
             {
-                return new Date 
-                { DateTime = this.calculateFecuencyOccurEvery(CurrentDate, ConfDailyFrecuency), 
+                return new DateOut
+                {
+                  DateTime = this.calculateFecuencyOccurEvery(CurrentDate, ConfDailyFrecuency), 
                   Description = $"{ConfDailyFrecuency.EveryValue} {ConfDailyFrecuency.TimeInterval} between {ConfDailyFrecuency.Starting} and {ConfDailyFrecuency.End} starting on {CurrentDate:d}"
                 };
             }
@@ -126,6 +127,18 @@ namespace Domain.Entities
             if (this.Configuration.EndDateLimit != null && this.Configuration.EndDateLimit < this.DateInput.DateTime)
             {
                 throw new LimitExeption("This configuration is invalid.End limit overflow");
+            }
+        }
+
+        private void checkDay(DateTime CurrentDate, WeeklyFrecuency WeeklyFrecuency) 
+        {
+            if (WeeklyFrecuency != null && WeeklyFrecuency.Day.Count > 0)
+            {
+                if (!WeeklyFrecuency.Day.Contains(CurrentDate.DayOfWeek))
+                {
+                    throw new WeeklyFrecuencyException($"It is not allowed to run the day {CurrentDate.DayOfWeek}");
+                }
+
             }
         }
     }

@@ -2,9 +2,8 @@
 
 namespace Domain.Entities
 {
-    public class Date
+    public class DateIn
     {
         public DateTime DateTime { get;  set; }
-        public string Description { get;  set; }   
     }
 }

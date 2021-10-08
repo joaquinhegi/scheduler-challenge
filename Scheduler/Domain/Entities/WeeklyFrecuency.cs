@@ -6,6 +6,6 @@ namespace Domain.Entities
     public class WeeklyFrecuency
     {
         public int Every { get; set; }
-        public IEnumerable<DayOfWeek> Day { get; set; }
+        public IList<DayOfWeek> Day { get; set; }
     }
 }

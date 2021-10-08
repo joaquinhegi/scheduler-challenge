@@ -4,83 +4,24 @@ using FluentAssertions;
 using FluentAssertions.Execution;
 using FluentAssertions.Extensions;
 using System;
+using System.Collections.Generic;
 using Xunit;
 
 namespace Test
 {
-    public class CalculateNextExecutionDailyFrecuency
+    public class CalculateNextExecutionWeeklyConf
     {
+
         public static readonly Limit TheLimit = new Limit { StartDate = 1.January(2020), EndDate = null };
-         
-        [Fact]
-        public void calculate_daily_frecuency_Occur_once()
+        public static readonly WeeklyFrecuency weeklyFrecuency = new WeeklyFrecuency
         {
+            Every = 1,
+            Day = new List<DayOfWeek>() { DayOfWeek.Monday, DayOfWeek.Thursday, DayOfWeek.Friday }
+        };
 
-            DailyFrecuency dailyFrecuency = new DailyFrecuency()
-            {
-                OnceAtValue = new TimeSpan(04, 00, 00)
-            };
-            Configuration configuration = new Configuration
-            {
-                DateTime = DateTime.Now,
-                IsEnable = true,
-                Type = Domain.Enums.ConfigurationType.Recurring,
-                Occur = Domain.Enums.Occur.Daily,
-                Every = 0,
-                Limit = TheLimit,
-                DailyFrecuency = dailyFrecuency
-            };
-            DateTime CurrentDate = 1.January(2020).At(00, 00, 00);
-            DateIn currentDate = new DateIn { DateTime = CurrentDate };
 
-            Scheduler calcular = new Scheduler(currentDate);
-
-            DateOut date = calcular.CalculateDateOutput(configuration);
-
-            using (new AssertionScope())
-            {
-                date.DateTime.Should().Be(1.January(2020).At(04, 00, 00));
-                date.Description.Should().Contain("between");
-            }
-        }
-     
-        
         [Fact]
-        public void calculate_daily_frecuency_every_hour_one()
-        {
-            DailyFrecuency dailyFrecuency = new DailyFrecuency()
-            {
-                EveryValue = 2,
-                TimeInterval = Domain.Enums.TimeInterval.Hour,
-                Starting = new TimeSpan(04, 00, 00),
-                End = new TimeSpan(08, 00, 00)               
-            };
-            Configuration configuration = new Configuration
-            {
-                DateTime = DateTime.Now,
-                IsEnable = true,
-                Type = Domain.Enums.ConfigurationType.Recurring,
-                Occur = Domain.Enums.Occur.Daily,
-                Every = 0,
-                Limit = TheLimit,
-                DailyFrecuency = dailyFrecuency
-            };
-
-            DateTime CurrentDate = 1.January(2020).At(04, 00, 00);
-            DateIn currentDate = new DateIn { DateTime = CurrentDate };
-
-            Scheduler calcular = new Scheduler(currentDate);
-
-            DateOut date = calcular.CalculateDateOutput(configuration);
-
-            using (new AssertionScope())
-            {
-                date.DateTime.Should().Be(1.January(2020).At(04, 00, 00));
-                date.Description.Should().Contain("between");
-            }
-        }
-        [Fact]
-        public void calculate_daily_frecuency_every_hour_two()
+        public void calculate_daily_frecuency_every_weeklyFrecuencyException()
         {
             DailyFrecuency dailyFrecuency = new DailyFrecuency()
             {
@@ -89,6 +30,7 @@ namespace Test
                 Starting = new TimeSpan(04, 00, 00),
                 End = new TimeSpan(08, 00, 00)
             };
+
             Configuration configuration = new Configuration
             {
                 DateTime = DateTime.Now,
@@ -97,65 +39,32 @@ namespace Test
                 Occur = Domain.Enums.Occur.Daily,
                 Every = 0,
                 Limit = TheLimit,
-                DailyFrecuency = dailyFrecuency
+                DailyFrecuency = dailyFrecuency,
+                WeeklyFrecuency = weeklyFrecuency
             };
-            DateTime CurrentDate = 1.January(2020).At(06, 00, 00);
-            DateIn currentDate = new DateIn { DateTime = CurrentDate };
 
-            Scheduler calcular = new Scheduler(currentDate);
-
-            DateOut date = calcular.CalculateDateOutput(configuration);
-            using (new AssertionScope())
-            {
-                date.DateTime.Should().Be(1.January(2020).At(06, 00, 00));
-                date.Description.Should().Contain("between");
-            }
-        }
-        [Fact]
-        public void calculate_daily_frecuency_every_hour_three()
-        {
-            DailyFrecuency dailyFrecuency = new DailyFrecuency()
-            {
-                EveryValue = 2,
-                TimeInterval = Domain.Enums.TimeInterval.Hour,
-                Starting = new TimeSpan(04, 00, 00),
-                End = new TimeSpan(08, 00, 00)
-            };
-            Configuration configuration = new Configuration
-            {
-                DateTime = DateTime.Now,
-                IsEnable = true,
-                Type = Domain.Enums.ConfigurationType.Recurring,
-                Occur = Domain.Enums.Occur.Daily,
-                Every = 0,
-                Limit = TheLimit,
-                DailyFrecuency = dailyFrecuency
-            };
             DateTime CurrentDate = 1.January(2020).At(08, 00, 00);
             DateIn currentDate = new DateIn { DateTime = CurrentDate };
 
             Scheduler calcular = new Scheduler(currentDate);
+    
+            Action act = () => calcular.CalculateDateOutput(configuration);
+            act.Should().ThrowExactly<WeeklyFrecuencyException>().WithMessage("It is not allowed to run the day*");
 
-            DateOut date = calcular.CalculateDateOutput(configuration);
-            using (new AssertionScope())
-            {
-                date.DateTime.Should().Be(1.January(2020).At(08, 00, 00));
-                date.Description.Should().Contain("between");
-            }
         }
+
+
+        [Fact]
+        public void calculate_daily_frecuency_every_hour_one_monday()
+        {
+            DailyFrecuency dailyFrecuency = new DailyFrecuency()
+            {
+                EveryValue = 2,
+                TimeInterval = Domain.Enums.TimeInterval.Hour,
+                Starting = new TimeSpan(04, 00, 00),
+                End = new TimeSpan(08, 00, 00)
+            };
        
-        
-        [Fact]       
-        public void calculate_daily_frecuency_every_minute_one()
-        {
-            DailyFrecuency dailyFrecuency = new DailyFrecuency()
-            {
-                EveryValue = 30,
-                TimeInterval = Domain.Enums.TimeInterval.Minute,
-                Starting = new TimeSpan(04, 00, 00),
-                End = new TimeSpan(08, 00, 00)
-
-            };
             Configuration configuration = new Configuration
             {
                 DateTime = DateTime.Now,
@@ -164,31 +73,34 @@ namespace Test
                 Occur = Domain.Enums.Occur.Daily,
                 Every = 0,
                 Limit = TheLimit,
-                DailyFrecuency = dailyFrecuency
+                DailyFrecuency = dailyFrecuency,
+                WeeklyFrecuency = weeklyFrecuency
             };
-            DateTime CurrentDate = 1.January(2020).At(04, 30, 00);
+
+            DateTime CurrentDate = 6.January(2020).At(04, 00, 00);
             DateIn currentDate = new DateIn { DateTime = CurrentDate };
 
             Scheduler calcular = new Scheduler(currentDate);
 
             DateOut date = calcular.CalculateDateOutput(configuration);
+
             using (new AssertionScope())
             {
-                date.DateTime.Should().Be(1.January(2020).At(04, 30, 00));
+                date.DateTime.Should().Be(6.January(2020).At(04, 00, 00));
                 date.Description.Should().Contain("between");
             }
         }
         [Fact]
-        public void calculate_daily_frecuency_every_minute_two()
+        public void calculate_daily_frecuency_every_hour_two_monday()
         {
             DailyFrecuency dailyFrecuency = new DailyFrecuency()
             {
-                EveryValue = 30,
-                TimeInterval = Domain.Enums.TimeInterval.Minute,
+                EveryValue = 2,
+                TimeInterval = Domain.Enums.TimeInterval.Hour,
                 Starting = new TimeSpan(04, 00, 00),
                 End = new TimeSpan(08, 00, 00)
-
             };
+
             Configuration configuration = new Configuration
             {
                 DateTime = DateTime.Now,
@@ -197,66 +109,34 @@ namespace Test
                 Occur = Domain.Enums.Occur.Daily,
                 Every = 0,
                 Limit = TheLimit,
-                DailyFrecuency = dailyFrecuency
+                DailyFrecuency = dailyFrecuency,
+                WeeklyFrecuency = weeklyFrecuency
             };
-            DateTime CurrentDate = 1.January(2020).At(05, 00, 00);
+
+            DateTime CurrentDate = 6.January(2020).At(06, 00, 00);
             DateIn currentDate = new DateIn { DateTime = CurrentDate };
 
             Scheduler calcular = new Scheduler(currentDate);
 
             DateOut date = calcular.CalculateDateOutput(configuration);
+
             using (new AssertionScope())
             {
-                date.DateTime.Should().Be(1.January(2020).At(05, 00, 00));
-                date.Description.Should().Contain("between");
-            }
-        }
-       
-        
-        [Fact]
-        public void calculate_daily_frecuency_every_second_one()
-        {
-            DailyFrecuency dailyFrecuency = new DailyFrecuency()
-            {
-                EveryValue = 30,
-                TimeInterval = Domain.Enums.TimeInterval.Second,
-                Starting = new TimeSpan(04, 00, 00),
-                End = new TimeSpan(08, 00, 00)
-
-            };
-            Configuration configuration = new Configuration
-            {
-                DateTime = DateTime.Now,
-                IsEnable = true,
-                Type = Domain.Enums.ConfigurationType.Recurring,
-                Occur = Domain.Enums.Occur.Daily,
-                Every = 0,
-                Limit = TheLimit,
-                DailyFrecuency = dailyFrecuency
-            };
-            DateTime CurrentDate = 1.January(2020).At(04, 00, 30);
-            DateIn currentDate = new DateIn { DateTime = CurrentDate };
-
-            Scheduler calcular = new Scheduler(currentDate);
-
-            DateOut date = calcular.CalculateDateOutput(configuration);
-            using (new AssertionScope())
-            {
-                date.DateTime.Should().Be(1.January(2020).At(04, 00, 30));
+                date.DateTime.Should().Be(6.January(2020).At(06, 00, 00));
                 date.Description.Should().Contain("between");
             }
         }
         [Fact]
-        public void calculate_daily_frecuency_every_second_two()
+        public void calculate_daily_frecuency_every_hour_three_monday()
         {
             DailyFrecuency dailyFrecuency = new DailyFrecuency()
             {
-                EveryValue = 30,
-                TimeInterval = Domain.Enums.TimeInterval.Second,
+                EveryValue = 2,
+                TimeInterval = Domain.Enums.TimeInterval.Hour,
                 Starting = new TimeSpan(04, 00, 00),
                 End = new TimeSpan(08, 00, 00)
-
             };
+
             Configuration configuration = new Configuration
             {
                 DateTime = DateTime.Now,
@@ -265,24 +145,27 @@ namespace Test
                 Occur = Domain.Enums.Occur.Daily,
                 Every = 0,
                 Limit = TheLimit,
-                DailyFrecuency = dailyFrecuency
+                DailyFrecuency = dailyFrecuency,
+                WeeklyFrecuency = weeklyFrecuency
             };
-            DateTime CurrentDate = 1.January(2020).At(04, 01, 00);
+
+            DateTime CurrentDate = 6.January(2020).At(08, 00, 00);
             DateIn currentDate = new DateIn { DateTime = CurrentDate };
 
             Scheduler calcular = new Scheduler(currentDate);
 
             DateOut date = calcular.CalculateDateOutput(configuration);
+
             using (new AssertionScope())
             {
-                date.DateTime.Should().Be(1.January(2020).At(04, 01, 00));
+                date.DateTime.Should().Be(6.January(2020).At(08, 00, 00));
                 date.Description.Should().Contain("between");
             }
         }
-     
+
       
         [Fact]
-        public void calculate_daily_frecuency_Out_of_start_limiit()
+        public void calculate_daily_frecuency_every_hour_one_thursday()
         {
             DailyFrecuency dailyFrecuency = new DailyFrecuency()
             {
@@ -291,6 +174,7 @@ namespace Test
                 Starting = new TimeSpan(04, 00, 00),
                 End = new TimeSpan(08, 00, 00)
             };
+
             Configuration configuration = new Configuration
             {
                 DateTime = DateTime.Now,
@@ -299,46 +183,25 @@ namespace Test
                 Occur = Domain.Enums.Occur.Daily,
                 Every = 0,
                 Limit = TheLimit,
-                DailyFrecuency = dailyFrecuency
+                DailyFrecuency = dailyFrecuency,
+                WeeklyFrecuency = weeklyFrecuency
             };
-            DateTime CurrentDate = 1.January(2020).At(03, 00, 00);
+
+            DateTime CurrentDate = 2.January(2020).At(04, 00, 00);
             DateIn currentDate = new DateIn { DateTime = CurrentDate };
 
             Scheduler calcular = new Scheduler(currentDate);
 
-            Action act = () => calcular.CalculateDateOutput(configuration);
-            act.Should().ThrowExactly<DailyFrecuencyException>().WithMessage("The execution is outside the time limits"); ;
-        }
-        [Fact]    
-        public void calculate_daily_frecuency_Out_of_end_limit()
-        {
-            DailyFrecuency dailyFrecuency = new DailyFrecuency()
-            {
-                EveryValue = 2,
-                TimeInterval = Domain.Enums.TimeInterval.Hour,
-                Starting = new TimeSpan(04, 00, 00),
-                End= new TimeSpan(08, 00, 00) 
-            };
-            Configuration configuration = new Configuration
-            {
-                DateTime = DateTime.Now,
-                IsEnable = true,
-                Type = Domain.Enums.ConfigurationType.Recurring,
-                Occur = Domain.Enums.Occur.Daily,
-                Every = 0,
-                Limit = TheLimit,
-                DailyFrecuency = dailyFrecuency
-            };
-            DateTime CurrentDate = 1.January(2020).At(10, 00, 00);
-            DateIn currentDate = new DateIn { DateTime = CurrentDate };
+            DateOut date = calcular.CalculateDateOutput(configuration);
 
-            Scheduler calcular = new Scheduler(currentDate);
-
-            Action act = () => calcular.CalculateDateOutput(configuration);
-            act.Should().ThrowExactly<DailyFrecuencyException>().WithMessage("The execution is outside the time limits");
+            using (new AssertionScope())
+            {
+                date.DateTime.Should().Be(2.January(2020).At(04, 00, 00));
+                date.Description.Should().Contain("between");
+            }
         }
         [Fact]
-        public void calculate_daily_frecuency_every_hour_not_execute()
+        public void calculate_daily_frecuency_every_hour_two_thursday()
         {
             DailyFrecuency dailyFrecuency = new DailyFrecuency()
             {
@@ -347,6 +210,7 @@ namespace Test
                 Starting = new TimeSpan(04, 00, 00),
                 End = new TimeSpan(08, 00, 00)
             };
+
             Configuration configuration = new Configuration
             {
                 DateTime = DateTime.Now,
@@ -355,16 +219,169 @@ namespace Test
                 Occur = Domain.Enums.Occur.Daily,
                 Every = 0,
                 Limit = TheLimit,
-                DailyFrecuency = dailyFrecuency
+                DailyFrecuency = dailyFrecuency,
+                WeeklyFrecuency = weeklyFrecuency
             };
 
-            DateTime CurrentDate = 1.January(2020).At(05, 00, 00);
+            DateTime CurrentDate = 2.January(2020).At(06, 00, 00);
             DateIn currentDate = new DateIn { DateTime = CurrentDate };
 
             Scheduler calcular = new Scheduler(currentDate);
 
-            Action act = () => calcular.CalculateDateOutput(configuration);
-            act.Should().ThrowExactly<DailyFrecuencyException>().WithMessage("Execution is not allowed in this time interval");
+            DateOut date = calcular.CalculateDateOutput(configuration);
+
+            using (new AssertionScope())
+            {
+                date.DateTime.Should().Be(2.January(2020).At(06, 00, 00));
+                date.Description.Should().Contain("between");
+            }
         }
+        [Fact]
+        public void calculate_daily_frecuency_every_hour_three_thursday()
+        {
+            DailyFrecuency dailyFrecuency = new DailyFrecuency()
+            {
+                EveryValue = 2,
+                TimeInterval = Domain.Enums.TimeInterval.Hour,
+                Starting = new TimeSpan(04, 00, 00),
+                End = new TimeSpan(08, 00, 00)
+            };
+
+            Configuration configuration = new Configuration
+            {
+                DateTime = DateTime.Now,
+                IsEnable = true,
+                Type = Domain.Enums.ConfigurationType.Recurring,
+                Occur = Domain.Enums.Occur.Daily,
+                Every = 0,
+                Limit = TheLimit,
+                DailyFrecuency = dailyFrecuency,
+                WeeklyFrecuency = weeklyFrecuency
+            };
+
+            DateTime CurrentDate = 2.January(2020).At(08, 00, 00);
+            DateIn currentDate = new DateIn { DateTime = CurrentDate };
+
+            Scheduler calcular = new Scheduler(currentDate);
+
+            DateOut date = calcular.CalculateDateOutput(configuration);
+
+            using (new AssertionScope())
+            {
+                date.DateTime.Should().Be(2.January(2020).At(08, 00, 00));
+                date.Description.Should().Contain("between");
+            }
+        }
+   
+
+        [Fact]
+        public void calculate_daily_frecuency_every_hour_one_friday()
+        {
+            DailyFrecuency dailyFrecuency = new DailyFrecuency()
+            {
+                EveryValue = 2,
+                TimeInterval = Domain.Enums.TimeInterval.Hour,
+                Starting = new TimeSpan(04, 00, 00),
+                End = new TimeSpan(08, 00, 00)
+            };
+
+            Configuration configuration = new Configuration
+            {
+                DateTime = DateTime.Now,
+                IsEnable = true,
+                Type = Domain.Enums.ConfigurationType.Recurring,
+                Occur = Domain.Enums.Occur.Daily,
+                Every = 0,
+                Limit = TheLimit,
+                DailyFrecuency = dailyFrecuency,
+                WeeklyFrecuency = weeklyFrecuency
+            };
+
+            DateTime CurrentDate = 3.January(2020).At(04, 00, 00);
+            DateIn currentDate = new DateIn { DateTime = CurrentDate };
+
+            Scheduler calcular = new Scheduler(currentDate);
+
+            DateOut date = calcular.CalculateDateOutput(configuration);
+
+            using (new AssertionScope())
+            {
+                date.DateTime.Should().Be(3.January(2020).At(04, 00, 00));
+                date.Description.Should().Contain("between");
+            }
+        }
+        [Fact]
+        public void calculate_daily_frecuency_every_hour_two_friday()
+        {
+            DailyFrecuency dailyFrecuency = new DailyFrecuency()
+            {
+                EveryValue = 2,
+                TimeInterval = Domain.Enums.TimeInterval.Hour,
+                Starting = new TimeSpan(04, 00, 00),
+                End = new TimeSpan(08, 00, 00)
+            };
+
+            Configuration configuration = new Configuration
+            {
+                DateTime = DateTime.Now,
+                IsEnable = true,
+                Type = Domain.Enums.ConfigurationType.Recurring,
+                Occur = Domain.Enums.Occur.Daily,
+                Every = 0,
+                Limit = TheLimit,
+                DailyFrecuency = dailyFrecuency,
+                WeeklyFrecuency = weeklyFrecuency
+            };
+
+            DateTime CurrentDate = 3.January(2020).At(06, 00, 00);
+            DateIn currentDate = new DateIn { DateTime = CurrentDate };
+
+            Scheduler calcular = new Scheduler(currentDate);
+
+            DateOut date = calcular.CalculateDateOutput(configuration);
+
+            using (new AssertionScope())
+            {
+                date.DateTime.Should().Be(3.January(2020).At(06, 00, 00));
+                date.Description.Should().Contain("between");
+            }
+        }
+        [Fact]
+        public void calculate_daily_frecuency_every_hour_three_friday()
+        {
+            DailyFrecuency dailyFrecuency = new DailyFrecuency()
+            {
+                EveryValue = 2,
+                TimeInterval = Domain.Enums.TimeInterval.Hour,
+                Starting = new TimeSpan(04, 00, 00),
+                End = new TimeSpan(08, 00, 00)
+            };
+
+            Configuration configuration = new Configuration
+            {
+                DateTime = DateTime.Now,
+                IsEnable = true,
+                Type = Domain.Enums.ConfigurationType.Recurring,
+                Occur = Domain.Enums.Occur.Daily,
+                Every = 0,
+                Limit = TheLimit,
+                DailyFrecuency = dailyFrecuency,
+                WeeklyFrecuency = weeklyFrecuency
+            };
+
+            DateTime CurrentDate = 3.January(2020).At(08, 00, 00);
+            DateIn currentDate = new DateIn { DateTime = CurrentDate };
+
+            Scheduler calcular = new Scheduler(currentDate);
+
+            DateOut date = calcular.CalculateDateOutput(configuration);
+
+            using (new AssertionScope())
+            {
+                date.DateTime.Should().Be(3.January(2020).At(08, 00, 00));
+                date.Description.Should().Contain("between");
+            }
+        }
+
     }
 }
