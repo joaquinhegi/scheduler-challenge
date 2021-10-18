@@ -3,7 +3,8 @@
     public enum Occur
     {
         Daily = 0,
-        Monthly = 1,
-        Yearly = 2
+        Weekly = 1,
+        Monthly = 2,
+        Yearly = 3
     }
 }

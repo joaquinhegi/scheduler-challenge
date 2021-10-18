@@ -1,6 +1,8 @@
 ﻿using Domain.Enums;
 using Domain.Exceptions;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Domain.Entities
 {
@@ -20,125 +22,139 @@ namespace Domain.Entities
             this.Configuration = Configuration;
 
             this.checkLimit();
-
-            if (this.Configuration.DailyFrecuency != null)
-            {
-                DailyFrecuency dailyFrecuency = Configuration.DailyFrecuency;
-                this.checkDay(this.DateInput.DateTime, Configuration.WeeklyFrecuency);
-                return this.calculateDailyFecuency(this.DateInput.DateTime, dailyFrecuency);
-            }
-            else
-            {
-                return this.calcute();
-            }              
-        }
-
-        private DateOut calcute()
-        {
-            string description;
-            DateTime date;
-
             if (this.Configuration.Type == ConfigurationType.Once)
             {
-                date = this.Configuration.DateTime;
-                description = $"Occurs once. Schedule will be used on {date:d} at { date:t} starting on {this.Configuration.StartDateLimit:d}";
+               return new DateOut { DateTime = this.Configuration.DateTime, Description = $"Occurs once. Schedule will be used on { this.Configuration.DateTime:d} at {  this.Configuration.DateTime:t} starting on {this.Configuration.StartDate:d}" };
             }
             else
             {
-                date = this.calculateOccus(this.DateInput.DateTime, this.Configuration.Occur, this.Configuration.Every);
-                description = $"Occurs {(this.Configuration.Every > 1 ? this.Configuration.Every.ToString() : "every") }  {this.Configuration.Occur}. " +
-                    $"Schedule will be used on {date:d} at { date:t} starting on {this.Configuration.StartDateLimit:d}";
-           
+                return this.calculateDailyFecuency(this.DateInput.DateTime);
             }
-            return new DateOut { DateTime = date, Description = description };
-
+              
         }
-
-        private DateTime calculateOccus(DateTime date, Occur occur, int every)
+        private DateOut calculateDailyFecuency(DateTime CurrentDate)
         {
-            switch (occur)
-            {
-                case Occur.Daily:
-                    return date.AddDays(every);
-                case Occur.Monthly:
-                    return date.AddMonths(every);
-                case Occur.Yearly:
-                    return date.AddYears(every);
-                default:
-                    throw new OccurExeption("Occur is invalidate");
-            }
-        }
-
-        private DateOut calculateDailyFecuency(DateTime CurrentDate, DailyFrecuency ConfDailyFrecuency) 
-        {
-            if (ConfDailyFrecuency.OnceAtValue != TimeSpan.Zero)
+            if (this.Configuration.OnceAtValue != TimeSpan.Zero)
             {
                 return new DateOut
                 {
-                    DateTime = CurrentDate.Add(ConfDailyFrecuency.OnceAtValue),
-                    Description = $"{ConfDailyFrecuency.OnceAtValue} between {ConfDailyFrecuency.Starting} and {ConfDailyFrecuency.End} starting on {CurrentDate:d}"
+                    DateTime = CurrentDate.Add(this.Configuration.OnceAtValue),
+                    Description = $"{this.Configuration.EndInterval} between {this.Configuration.StartingInterval} and {this.Configuration.EndInterval} starting on {CurrentDate:d}"
                 };
             }
             else
             {
+                DateTime  auxDate;
+                if (this.Configuration.Occur == Occur.Weekly)
+                {
+                    auxDate = calculateWeeklyFecuency(CurrentDate);
+                }
+                else
+                {
+                    auxDate = calculateDailyFrecuency(CurrentDate);
+                }
+
                 return new DateOut
                 {
-                  DateTime = this.calculateFecuencyOccurEvery(CurrentDate, ConfDailyFrecuency), 
-                  Description = $"{ConfDailyFrecuency.EveryValue} {ConfDailyFrecuency.TimeInterval} between {ConfDailyFrecuency.Starting} and {ConfDailyFrecuency.End} starting on {CurrentDate:d}"
+                    DateTime = auxDate,
+                    Description = $"{this.Configuration.EveryInterval} {this.Configuration.EveryInterval} between {this.Configuration.StartingInterval} and {this.Configuration.EveryInterval} starting on {CurrentDate:d}"
                 };
             }
         }
-
-        private DateTime calculateFecuencyOccurEvery(DateTime CurrentDate, DailyFrecuency ConfDailyFrecuency)
-        {
-            if ( CurrentDate.TimeOfDay < ConfDailyFrecuency.Starting || CurrentDate.TimeOfDay > ConfDailyFrecuency.End)
+        private DateTime calculateDailyFrecuency(DateTime CurrentDate)
+        {    
+            DateTime auxDate = culcultateDateTimeInterval(CurrentDate);
+            int subtrarTime = culcultateTimeInterval(CurrentDate.TimeOfDay);
+            if (this.Configuration.StartingInterval > auxDate.TimeOfDay)
             {
-                throw new DailyFrecuencyException("The execution is outside the time limits");
+                return auxDate.Subtract(auxDate.TimeOfDay).Add(this.Configuration.StartingInterval);
             }
-            int subtrarTime = culcultateTimeInterval(CurrentDate.TimeOfDay, ConfDailyFrecuency);
-            if ((subtrarTime % ConfDailyFrecuency.EveryValue)== 0)
+            else if ((auxDate.TimeOfDay >= this.Configuration.StartingInterval)
+                && auxDate.TimeOfDay <= this.Configuration.EndInterval
+                 && (subtrarTime % this.Configuration.EveryInterval) == 0)
             {
-                return  CurrentDate;
+                return auxDate;
+            }
+            
+            throw new DailyFrecuencyException("Execution is not allowed in this time interval");
+        }
+        private DateTime calculateWeeklyFecuency(DateTime CurrentDate)
+        {
+            DateTime auxDate = culcultateDateTimeInterval(CurrentDate);
+            int subtrarTime = culcultateTimeInterval(CurrentDate.TimeOfDay);
+            
+
+            if (this.Configuration.StartingInterval > auxDate.TimeOfDay)
+            {
+                int nextDay = searchNextDay(auxDate, Configuration.DayWeek);
+                auxDate = auxDate.AddDays(nextDay);
+                return auxDate.Subtract(auxDate.TimeOfDay).Add(this.Configuration.StartingInterval);
+            }
+            else if ((auxDate.TimeOfDay >= this.Configuration.StartingInterval)
+                && auxDate.TimeOfDay <= this.Configuration.EndInterval
+                 && (subtrarTime % this.Configuration.EveryInterval) == 0)
+            {
+                return auxDate;
+            }
+            if (CurrentDate.TimeOfDay > this.Configuration.EndInterval)
+            {
+                int nextDay = searchNextDay(CurrentDate, Configuration.DayWeek);
+                CurrentDate = CurrentDate.AddDays(nextDay).Subtract(CurrentDate.TimeOfDay).Add(this.Configuration.StartingInterval);
+                return CurrentDate;
             }
             throw new DailyFrecuencyException("Execution is not allowed in this time interval");
         }
 
-        private int culcultateTimeInterval(TimeSpan CurrentDate, DailyFrecuency ConfDailyFrecuency) 
+        private int searchNextDay(DateTime diaActual, IList<DayOfWeek> list) 
         {
-            switch (ConfDailyFrecuency.TimeInterval)
+           int numDia = (int) list.OrderBy(x => (int)x).ToList().Where(x => (int)x > (int)diaActual.DayOfWeek).FirstOrDefault();
+            if ((int)diaActual.DayOfWeek < numDia)
+            {
+                return numDia - (int)diaActual.DayOfWeek;
+            }
+            else
+            {
+                int auxNumDia = (int)list.OrderBy(x => (int)x).ToList().Where(x => (int)x < (int)diaActual.DayOfWeek).FirstOrDefault();
+                return ((Configuration.EveryWeek * 7) - (int)diaActual.DayOfWeek) + auxNumDia;
+            }
+        }      
+        private DateTime culcultateDateTimeInterval(DateTime CurrentDate)
+        {
+            switch (Configuration.TimeInterval)
             {
                 case TimeInterval.Hour:
-                    return (int)CurrentDate.Subtract(ConfDailyFrecuency.Starting).TotalHours;
+                    return CurrentDate.AddHours(Configuration.EveryInterval);
                 case TimeInterval.Minute:
-                    return (int)CurrentDate.Subtract(ConfDailyFrecuency.Starting).TotalMinutes;
+                    return CurrentDate.AddMinutes(Configuration.EveryInterval);
                 case TimeInterval.Second:
-                    return (int)CurrentDate.Subtract(ConfDailyFrecuency.Starting).TotalSeconds;
+                    return CurrentDate.AddSeconds(Configuration.EveryInterval);
                 default:
                     throw new DailyFrecuencyException("TimeInterval is invalid");
             }
         }
-
+        private int culcultateTimeInterval(TimeSpan CurrentDate)
+        {
+            switch (Configuration.TimeInterval)
+            {
+                case TimeInterval.Hour:
+                    return (int)CurrentDate.Subtract(Configuration.StartingInterval).TotalHours;
+                case TimeInterval.Minute:
+                    return (int)CurrentDate.Subtract(Configuration.StartingInterval).TotalMinutes;
+                case TimeInterval.Second:
+                    return (int)CurrentDate.Subtract(Configuration.StartingInterval).TotalSeconds;
+                default:
+                    throw new DailyFrecuencyException("TimeInterval is invalid");
+            }
+        }
         private void checkLimit() 
         {
-            if (this.Configuration.StartDateLimit == null || this.Configuration.StartDateLimit > this.DateInput.DateTime)
+            if (this.Configuration.StartDate != null && this.Configuration.StartDate.CompareTo(this.DateInput.DateTime) == 1)
             {
                 throw new LimitExeption("This current date <= start limit");
             }
-            if (this.Configuration.EndDateLimit != null && this.Configuration.EndDateLimit < this.DateInput.DateTime)
+            if (this.Configuration.EndDate != null && this.Configuration.EndDate < this.DateInput.DateTime)
             {
                 throw new LimitExeption("This configuration is invalid.End limit overflow");
-            }
-        }
-
-        private void checkDay(DateTime CurrentDate, WeeklyFrecuency WeeklyFrecuency) 
-        {
-            if (WeeklyFrecuency != null && WeeklyFrecuency.Day.Count > 0)
-            {
-                if (!WeeklyFrecuency.Day.Contains(CurrentDate.DayOfWeek))
-                {
-                    throw new WeeklyFrecuencyException($"It is not allowed to run the day {CurrentDate.DayOfWeek}");
-                }
-
             }
         }
     }

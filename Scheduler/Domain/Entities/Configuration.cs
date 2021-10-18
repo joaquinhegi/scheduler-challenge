@@ -1,5 +1,6 @@
 ﻿using Domain.Enums;
 using System;
+using System.Collections.Generic;
 
 namespace Domain.Entities
 {
@@ -10,18 +11,20 @@ namespace Domain.Entities
         public DateTime DateTime { get;  set; }
         public Occur Occur { get;  set; }
         public int Every { get;  set; }
-        public Limit Limit { get;  set; }
-        public WeeklyFrecuency WeeklyFrecuency { get; set; }
-        public DailyFrecuency DailyFrecuency { get; set; }
+        public DateTime StartDate { get; set; }
+        public DateTime? EndDate { get; set; }
 
 
-        public DateTime StartDateLimit 
-        {
-            get => this.Limit.StartDate;
-        }
-        public DateTime? EndDateLimit
-        {
-            get => this.Limit.EndDate;
-        }
+
+        public int EveryWeek { get; set; }
+        public IList<DayOfWeek> DayWeek { get; set; }
+        public TimeSpan OnceAtValue { get; set; }
+
+
+        public int EveryInterval { get; set; }
+        public TimeInterval TimeInterval { get; set; }
+        public TimeSpan StartingInterval { get; set; }
+        public TimeSpan EndInterval { get; set; }
+
     }
 }

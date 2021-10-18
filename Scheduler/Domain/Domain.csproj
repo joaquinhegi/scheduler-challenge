@@ -43,11 +43,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Entities\DateOut.cs" />
-    <Compile Include="Entities\DailyFrecuency.cs" />
-    <Compile Include="Entities\WeeklyFrecuency.cs" />
     <Compile Include="Entities\Configuration.cs" />
     <Compile Include="Entities\Scheduler.cs" />
-    <Compile Include="Entities\Limit.cs" />
     <Compile Include="Entities\DateIn.cs" />
     <Compile Include="Enums\TimeInterval.cs" />
     <Compile Include="Enums\ConfigurationType.cs" />
