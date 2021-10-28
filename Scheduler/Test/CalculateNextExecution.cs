@@ -15,16 +15,16 @@ namespace Test
         public void calculate_type_once()
         {
             DateTime DateTimeConfiguration = 8.January(2020).At(14, 00, 00);
-            Configuration configuration = new Configuration
+            SchedulerConfiguration configuration = new SchedulerConfiguration
             {
-                DateTime = DateTimeConfiguration,
+                OnceDateTime = DateTimeConfiguration,
                 IsEnable = true,
                 Type = Domain.Enums.ConfigurationType.Once,
                 Occur = Domain.Enums.Occur.Daily,
                 Every = 0,
                 StartDate = 1.January(2020),
             };
-            DateIn currentDate = new DateIn { DateTime = 1.January(2020)};
+            DateTime currentDate = 1.January(2020);
             Scheduler calcular = new Scheduler(currentDate);
 
             DateOut date = calcular.CalculateDateOutput(configuration);
@@ -38,16 +38,16 @@ namespace Test
         public void calculate_daily_frecuency_once_start_date()
         {
             DateTime DateTimeConfiguration = 8.January(2020).At(14, 00, 00);
-            Configuration configuration = new Configuration
+            SchedulerConfiguration configuration = new SchedulerConfiguration
             {
-                DateTime = DateTimeConfiguration,
+                OnceDateTime = DateTimeConfiguration,
                 IsEnable = true,
                 Type = Domain.Enums.ConfigurationType.Once,
                 Occur = Domain.Enums.Occur.Daily,
                 Every = 0,
                 StartDate = 1.January(2020),
             };
-            DateIn currentDate = new DateIn { DateTime = 1.December(2019) };
+            DateTime currentDate =  1.December(2019) ;
             Scheduler calcular = new Scheduler(currentDate);
 
             Action act = () => calcular.CalculateDateOutput(configuration);
@@ -58,9 +58,9 @@ namespace Test
         public void calculate_daily_frecuency_once_end_date()
         {
             DateTime DateTimeConfiguration = 8.January(2020).At(14, 00, 00);
-            Configuration configuration = new Configuration
+            SchedulerConfiguration configuration = new SchedulerConfiguration
             {
-                DateTime = DateTimeConfiguration,
+                OnceDateTime = DateTimeConfiguration,
                 IsEnable = true,
                 Type = Domain.Enums.ConfigurationType.Once,
                 Occur = Domain.Enums.Occur.Daily,
@@ -68,7 +68,7 @@ namespace Test
                 StartDate = 1.January(2020),
                 EndDate = 1.February(2020)
             };
-            DateIn currentDate = new DateIn { DateTime = 1.May(2020) };
+            DateTime currentDate = 1.May(2020);
             Scheduler calcular = new Scheduler(currentDate);
 
             Action act = () => calcular.CalculateDateOutput(configuration);
@@ -79,9 +79,9 @@ namespace Test
         [Fact]
         public void calculate_daily_frecuency_once()
         {
-            Configuration configuration = new Configuration
+            SchedulerConfiguration configuration = new SchedulerConfiguration
             {
-                DateTime = DateTime.Now,
+                OnceDateTime = DateTime.Now,
                 IsEnable = true,
                 Type = Domain.Enums.ConfigurationType.Recurring,
                 Occur = Domain.Enums.Occur.Daily,
@@ -89,8 +89,7 @@ namespace Test
                 StartDate = 1.January(2020),
                 OnceAtValue = new TimeSpan(04, 00, 00)
             };
-            DateTime CurrentDate = 1.January(2020).At(00, 00, 00);
-            DateIn currentDate = new DateIn { DateTime = CurrentDate };
+            DateTime currentDate = 1.January(2020).At(00, 00, 00);
 
             Scheduler calcular = new Scheduler(currentDate);
 
@@ -117,22 +116,21 @@ namespace Test
         [MemberData(nameof(DataDailyFrecuency))]
         public void calculate_daily_frecuency_every(DateTime value, DateTime expected)
         {
-            Configuration configuration = new Configuration
+            SchedulerConfiguration configuration = new SchedulerConfiguration
             {
-                DateTime = DateTime.Now,
+                OnceDateTime = DateTime.Now,
                 IsEnable = true,
                 Type = Domain.Enums.ConfigurationType.Recurring,
                 Occur = Domain.Enums.Occur.Daily,
                 Every = 0,
                 StartDate = 1.January(2020),
                 EveryInterval = 2,
-                TimeInterval = Domain.Enums.TimeInterval.Hour,
+                TimeInterval = Domain.Enums.FrecuencyOccurEveryType.Hour,
                 StartingInterval = new TimeSpan(04, 00, 00),
                 EndInterval = new TimeSpan(08, 00, 00)
             };
 
-            DateTime CurrentDate = value;
-            DateIn currentDate = new DateIn { DateTime = CurrentDate };
+            DateTime currentDate = value;
 
             Scheduler calcular = new Scheduler(currentDate);
 
@@ -148,22 +146,21 @@ namespace Test
         [Fact]
         public void calculate_daily_frecuency_every_hour_start_limit()
         {
-            Configuration configuration = new Configuration
+            SchedulerConfiguration configuration = new SchedulerConfiguration
             {
-                DateTime = DateTime.Now,
+                OnceDateTime = DateTime.Now,
                 IsEnable = true,
                 Type = Domain.Enums.ConfigurationType.Recurring,
                 Occur = Domain.Enums.Occur.Daily,
                 Every = 0,
                 StartDate = 1.January(2020),
                 EveryInterval = 2,
-                TimeInterval = Domain.Enums.TimeInterval.Hour,
+                TimeInterval = Domain.Enums.FrecuencyOccurEveryType.Hour,
                 StartingInterval = new TimeSpan(04, 00, 00),
                 EndInterval = new TimeSpan(08, 00, 00)
             };
 
-            DateTime CurrentDate = 1.January(2020).At(03, 00, 00);
-            DateIn currentDate = new DateIn { DateTime = CurrentDate };
+            DateTime currentDate = 1.January(2020).At(03, 00, 00);
 
             Scheduler calcular = new Scheduler(currentDate);
             Action act = () => calcular.CalculateDateOutput(configuration);
@@ -173,22 +170,21 @@ namespace Test
         [Fact]
         public void calculate_daily_frecuency_every_hour_end_limit()
         {
-            Configuration configuration = new Configuration
+            SchedulerConfiguration configuration = new SchedulerConfiguration
             {
-                DateTime = DateTime.Now,
+                OnceDateTime = DateTime.Now,
                 IsEnable = true,
                 Type = Domain.Enums.ConfigurationType.Recurring,
                 Occur = Domain.Enums.Occur.Daily,
                 Every = 0,
                 StartDate = 1.January(2020),
                 EveryInterval = 2,
-                TimeInterval = Domain.Enums.TimeInterval.Hour,
+                TimeInterval = Domain.Enums.FrecuencyOccurEveryType.Hour,
                 StartingInterval = new TimeSpan(04, 00, 00),
                 EndInterval = new TimeSpan(08, 00, 00)
             };
 
-            DateTime CurrentDate = 1.January(2020).At(09, 00, 00);
-            DateIn currentDate = new DateIn { DateTime = CurrentDate };
+            DateTime currentDate = 1.January(2020).At(09, 00, 00);
 
             Scheduler calcular = new Scheduler(currentDate);
             Action act = () => calcular.CalculateDateOutput(configuration);
@@ -214,9 +210,9 @@ namespace Test
         [MemberData(nameof(DataWeeklyFrecuency))]
         public void calculate_weekly_frecuency_Out_of_end_limit(DateTime value, DateTime expected)
         {
-            Configuration configuration = new Configuration
+            SchedulerConfiguration configuration = new SchedulerConfiguration
             {
-                DateTime = DateTime.Now,
+                OnceDateTime = DateTime.Now,
                 IsEnable = true,
                 Type = Domain.Enums.ConfigurationType.Recurring,
                 Occur = Domain.Enums.Occur.Weekly,
@@ -225,12 +221,11 @@ namespace Test
                 EveryWeek = 2,
                 DayWeek = new List<DayOfWeek>() { DayOfWeek.Monday, DayOfWeek.Thursday, DayOfWeek.Friday },
                 EveryInterval = 2,
-                TimeInterval = Domain.Enums.TimeInterval.Hour,
+                TimeInterval = Domain.Enums.FrecuencyOccurEveryType.Hour,
                 StartingInterval = new TimeSpan(04, 00, 00),
                 EndInterval = new TimeSpan(08, 00, 00)
             };
-            DateTime CurrentDate = value;
-            DateIn currentDate = new DateIn { DateTime = CurrentDate };
+            DateTime currentDate = value;
 
             Scheduler calcular = new Scheduler(currentDate);
 
