@@ -44,11 +44,13 @@
   <ItemGroup>
     <Compile Include="Entities\SchedulerConfiguration.cs" />
     <Compile Include="Enums\FrecuencyOccurEveryType.cs" />
-    <Compile Include="Enums\ConfigurationType.cs" />
+    <Compile Include="Enums\OccursType.cs" />
+    <Compile Include="Exceptions\SchedulerException.cs" />
     <Compile Include="Exceptions\WeeklyFrecuencyException.cs" />
     <Compile Include="Exceptions\DailyFrecuencyException.cs" />
     <Compile Include="Exceptions\OccurExeption.cs" />
     <Compile Include="Exceptions\LimitExeption.cs" />
+    <Compile Include="Extension\SchedulerExtension.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup />
