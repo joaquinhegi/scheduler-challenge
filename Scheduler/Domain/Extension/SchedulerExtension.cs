@@ -177,7 +177,7 @@ namespace Domain.Extension
 
             if (schedulerConfiguration.CurrentDate?.DayOfWeek != schedulerConfiguration.Date.DayOfWeek)
             {
-                int aux = searchNextDay((DateTime)schedulerConfiguration.CurrentDate, schedulerConfiguration.DaysWeek, schedulerConfiguration.WeeklyEvery);
+                int aux = calculateNextDateNewWeek((DateTime)schedulerConfiguration.CurrentDate, schedulerConfiguration.DaysWeek, schedulerConfiguration.WeeklyEvery);
                 DateTime auxDate = (DateTime)schedulerConfiguration.CurrentDate;
                 schedulerConfiguration.Date = auxDate.AddDays(aux).Date + schedulerConfiguration.DailyFrecuencyStarting;
             }
@@ -185,22 +185,37 @@ namespace Domain.Extension
             {
                 schedulerConfiguration.Date = calculateNextDateSameDay(schedulerConfiguration)?? schedulerConfiguration.Date;
             }
-            schedulerConfiguration.Description = "";
+            schedulerConfiguration.Description = $"Occurs every {schedulerConfiguration.WeeklyEvery} " +
+                                                     $"weeks on " + createDescriptionDayOfWwk(schedulerConfiguration.DaysWeek) +
+                                                     $" every {schedulerConfiguration.DailyFrequencyEvery} " +
+                                                     $"{schedulerConfiguration.DailyFrequencyConfigurationType}" +
+                                                     $" between {schedulerConfiguration.DailyFrecuencyStarting:t} at " +
+                                                     $"{schedulerConfiguration.DailyFrecuencyEnd:t}"
+                                                     + createDescriptionLimit(schedulerConfiguration.StartDate,
+                                                                              schedulerConfiguration.EndDate);
             return schedulerConfiguration;
         }
         private static DateTime? calculateNextDateSameDay(SchedulerConfiguration schedulerConfiguration) 
         {
-            DateTime aux = (DateTime)schedulerConfiguration.CurrentDate;
-            if (!schedulerConfiguration.DaysWeek.Contains(aux.DayOfWeek))
+            DateTime auxDate = (DateTime)schedulerConfiguration.CurrentDate;
+            if (!schedulerConfiguration.DaysWeek.Contains(auxDate.DayOfWeek))
             {
-                int numNextDay = (int)schedulerConfiguration.DaysWeek.OrderBy(x => (int)x).ToList().FirstOrDefault(x => (int)x > (int)aux.DayOfWeek);
-                return schedulerConfiguration.Date.AddDays((numNextDay - (int)aux.DayOfWeek)).Date + schedulerConfiguration.DailyFrecuencyStarting;
+                int numNextDay = searchNextDay(schedulerConfiguration.DaysWeek, auxDate.DayOfWeek);
+                if (numNextDay == 0)
+                {
+                    return schedulerConfiguration.Date.AddDays(7 - (int)auxDate.DayOfWeek).Date + schedulerConfiguration.DailyFrecuencyStarting;
+                }
+                else
+                {
+                    return schedulerConfiguration.Date.AddDays((numNextDay - (int)auxDate.DayOfWeek)).Date + schedulerConfiguration.DailyFrecuencyStarting;
+                }
+      
             }
             return null;
         }
-        private static int searchNextDay(DateTime diaActual, IList<DayOfWeek> listDayOfWeek, int EveryWeek)
+        private static int calculateNextDateNewWeek(DateTime diaActual, IList<DayOfWeek> listDayOfWeek, int EveryWeek)
         {
-            int numNextDay = (int)listDayOfWeek.OrderBy(x => (int)x).ToList().FirstOrDefault(x => (int)x > (int)diaActual.DayOfWeek);
+            int numNextDay = searchNextDay(listDayOfWeek,diaActual.DayOfWeek);
             int diaAcutalOfWekly = (int)diaActual.DayOfWeek;
 
             if (numNextDay != 0 || numNextDay == diaAcutalOfWekly)
@@ -209,10 +224,17 @@ namespace Domain.Extension
             }
             else
             {
-
-                int auxNumDia = (int)listDayOfWeek.OrderBy(x => (int)x).ToList().FirstOrDefault(x => (int)x < diaAcutalOfWekly);
+                int auxNumDia = searchBackDay(listDayOfWeek, diaActual.DayOfWeek);
                 return ((EveryWeek * 7) + auxNumDia) + (7- diaAcutalOfWekly);
             }
+        }
+        private static int searchNextDay (IList<DayOfWeek> listDayOfWeek, DayOfWeek dayOfWeeks)
+        {
+           return (int)listDayOfWeek.OrderBy(x => (int)x).ToList().FirstOrDefault(x => (int)x > (int)dayOfWeeks);
+        }
+        private static int searchBackDay(IList<DayOfWeek> listDayOfWeek, DayOfWeek dayOfWeeks)
+        {
+            return (int)listDayOfWeek.OrderBy(x => (int)x).ToList().FirstOrDefault(x => (int)x <= (int)dayOfWeeks);
         }
         #endregion
 
@@ -248,6 +270,20 @@ namespace Domain.Extension
         private static string createDescriptionLimit(DateTime star, DateTime? end)
         {
             return $" strating on {star:d}" + (end.HasValue ? $" and end on {end:d}" : string.Empty);
+        }
+        private static string createDescriptionDayOfWwk(IList<DayOfWeek> listDayOfWeek)
+        {
+            IList<DayOfWeek> auxList = listDayOfWeek.OrderBy(x => (int)x).ToList();
+            int positionUltimateComma = (auxList[auxList.Count - 1].ToString().Length);
+
+            if (listDayOfWeek.Count == 1)
+            {
+                return listDayOfWeek[0].ToString();
+            }
+            string auxDescription = String.Join(", ", auxList);
+            auxDescription = auxDescription.Remove(auxDescription.Length - (positionUltimateComma + 2),1);            
+            
+            return auxDescription.Insert(auxDescription.Length - positionUltimateComma, "and ");
         }
     }
 }
