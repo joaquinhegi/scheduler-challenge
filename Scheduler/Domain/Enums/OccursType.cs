@@ -1,6 +1,6 @@
 ﻿namespace Domain.Enums
 {
-    public enum ConfigurationType
+    public enum OccursType
     {
         Once = 0,
         Recurring = 1

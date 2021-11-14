@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace Domain.Exceptions
 {
-    public class WeeklyFrecuencyException : Exception
+    public class SchedulerException : Exception
     {
-        public WeeklyFrecuencyException(string message) : base(message) { } 
+        public SchedulerException(string message) : base(message) { }
     }
 }
