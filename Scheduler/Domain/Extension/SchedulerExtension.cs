@@ -70,13 +70,21 @@ namespace Domain.Extension
             try
             {
                 validateParameters(schedulerConfiguration);
-                if (schedulerConfiguration.FrequencyOccurType == FrecuencyOccurEveryType.Daily)
+                //Calcular Hora
+                if (true)
                 {
-                    calculateDailyFecuency(schedulerConfiguration);
-                }
-                else if (schedulerConfiguration.FrequencyOccurType == FrecuencyOccurEveryType.Weekly)
-                {
-                    calculateWeeklyFecuency(schedulerConfiguration);
+                    if (schedulerConfiguration.FrequencyOccurType == FrecuencyOccurEveryType.Daily)
+                    {
+                        calculateDailyFecuency(schedulerConfiguration);
+                    }
+                    else if (schedulerConfiguration.FrequencyOccurType == FrecuencyOccurEveryType.Weekly)
+                    {
+                        calculateWeeklyFecuency(schedulerConfiguration);
+                    }
+                    else if (schedulerConfiguration.FrequencyOccurType == FrecuencyOccurEveryType.Monthly)
+                    {
+                        calculateMonthlyFecuency(schedulerConfiguration);
+                    }
                 }
             }
             catch
@@ -107,7 +115,7 @@ namespace Domain.Extension
         }
         private static void calculateDailyOnceAt(SchedulerConfiguration schedulerConfiguration)
         {
-            DateTime occursOnceAt = (DateTime)schedulerConfiguration.CurrentDate?.Date.Add(schedulerConfiguration.DailyFrecuencyOccursOnceAt);
+            DateTime occursOnceAt = (DateTime)schedulerConfiguration.CurrentDate.Date.Add(schedulerConfiguration.DailyFrecuencyOccursOnceAt);
             schedulerConfiguration.Description = $"Occurs once. Schedule will be used on {occursOnceAt:d} at {occursOnceAt:t}"
                                                  + createDescriptionLimit(schedulerConfiguration.StartDate,
                                                                            schedulerConfiguration.EndDate);
@@ -175,7 +183,7 @@ namespace Domain.Extension
         {
             schedulerConfiguration.Date = calculateDateDailyEvery(schedulerConfiguration);
 
-            if (schedulerConfiguration.CurrentDate?.DayOfWeek != schedulerConfiguration.Date.DayOfWeek)
+            if (schedulerConfiguration.CurrentDate.DayOfWeek != schedulerConfiguration.Date.DayOfWeek)
             {
                 int aux = calculateNextDateNewWeek((DateTime)schedulerConfiguration.CurrentDate, schedulerConfiguration.DaysWeek, schedulerConfiguration.WeeklyEvery);
                 DateTime auxDate = (DateTime)schedulerConfiguration.CurrentDate;
@@ -266,6 +274,78 @@ namespace Domain.Extension
             }
         }
         #endregion
+
+        #region Calculate Monthly
+        private static DateTime calculateMonthlyFecuency(SchedulerConfiguration Configuration)
+        {
+            DateTime? auxDateTime;
+            //Falta Calcular HORA
+            if (Configuration.MonthlyFrecuencyByDay)
+            {
+                   auxDateTime = calculateDateDalyMonth(Configuration);
+            }
+            else
+            {
+                auxDateTime = DateTime.Now;
+                // OutputDateTime = CalculateDateTimeMonthlyDays(Configuration);
+            }
+            return auxDateTime.Value;
+        }
+        private static DateTime? calculateDateDalyMonth(SchedulerConfiguration configuration)
+        {
+            int day;
+            DateTime? resultDate;
+            if (configuration.CurrentDate.Day < configuration.MonthlyDay)
+            {
+                day = getEvaluateDayInMonth(configuration.MonthlyDay, configuration.CurrentDate.Year, configuration.CurrentDate.Month);
+                resultDate = new DateTime(configuration.CurrentDate.Year, configuration.CurrentDate.Month, day);
+            }
+            else
+            {
+
+                resultDate = configuration.CurrentDate.AddMonths(configuration.MonthlyDayOfEvery);
+                day = getEvaluateDayInMonth(configuration.MonthlyDay, resultDate.Value.Year, resultDate.Value.Month);
+                resultDate = new DateTime(resultDate.Value.Year, resultDate.Value.Month, day);
+            }
+
+            return resultDate;
+        }
+
+        //Metodo para calcular Intervalo Tiempo
+        private static int getEvaluateDayInMonth(int dayMonth, int year, int mounth)
+        {
+            int dayInMonth = DateTime.DaysInMonth(year, mounth);
+            if (dayInMonth < dayMonth)
+            {
+                dayMonth = dayInMonth;
+            }
+            return dayMonth;
+        }
+
+        //private static DateTime? nextDateHour(SchedulerConfiguration schedulerConfiguration)
+        //{
+        //    DateTime resultDateTime = schedulerConfiguration.CurrentDate;
+
+        //    if (resultDateTime.TimeOfDay < schedulerConfiguration.EndDate.Value.TimeOfDay)
+        //    {
+        //        resultDateTime = resultDateTime.Date.AddHours(schedulerConfiguration.StartDate.TimeOfDay.TotalHours);
+        //        while (resultDateTime.TimeOfDay <= schedulerConfiguration.CurrentDate.TimeOfDay)
+        //        {
+        //            resultDateTime = resultDateTime.AddHours(schedulerConfiguration.DailyFrequencyEvery);
+        //        }
+        //        if (resultDateTime.Date == schedulerConfiguration.CurrentDate.Date
+        //            && isInInterval(resultDateTime.TimeOfDay, schedulerConfiguration.StartDate.TimeOfDay, schedulerConfiguration.EndDate?.TimeOfDay))
+        //        {
+        //            return resultDateTime;
+        //        }
+        //    }
+        //    return null;
+        //}
+        //public static bool isInInterval(TimeSpan Time, TimeSpan? StartTime, TimeSpan? EndTime)
+        //    => (StartTime.HasValue == false || Time >= StartTime)
+        //   && (EndTime.HasValue == false || Time < EndTime);
+        #endregion
+
 
         private static string createDescriptionLimit(DateTime star, DateTime? end)
         {

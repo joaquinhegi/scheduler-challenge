@@ -179,7 +179,7 @@ namespace Test
                 DailyFrecuencyStarting = 4.Hours(),
                 DailyFrecuencyEnd = 8.Hours(),
 
-                CurrentDate = null
+                
             };
 
 
