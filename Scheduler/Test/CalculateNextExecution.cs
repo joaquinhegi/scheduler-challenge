@@ -1,4 +1,5 @@
 ﻿using Domain.Entities;
+using Domain.Enums;
 using Domain.Exceptions;
 using Domain.Extension;
 using FluentAssertions;
@@ -139,7 +140,7 @@ namespace Test
             };
 
             Action act = () => configuration.CalculateNextDate();
-            act.Should().ThrowExactly<ArgumentOutOfRangeException>().Where(x=>x.Message.Contains("This WeeklyEvery parameter cannot be less than zero"));
+            act.Should().ThrowExactly<ArgumentOutOfRangeException>().Where(x => x.Message.Contains("This WeeklyEvery parameter cannot be less than zero"));
         }
 
         [Fact]
@@ -162,30 +163,6 @@ namespace Test
             };
             Action act = () => configuration.CalculateNextDate();
             act.Should().ThrowExactly<ArgumentOutOfRangeException>();
-        }
-
-        [Fact]
-        public void calculate_daily_frecuency_every_currentDate_null()
-        {
-            SchedulerConfiguration configuration = new SchedulerConfiguration
-            {
-                SchedulerEnable = true,
-                SchedulerType = Domain.Enums.OccursType.Recurring,
-                FrequencyOccurType = Domain.Enums.FrecuencyOccurEveryType.Daily,
-
-                DailyFrecuencyOccursType = Domain.Enums.OccursType.Recurring,
-                DailyFrequencyEvery = 2,
-                DailyFrequencyConfigurationType = Domain.Enums.FrecuencyOccurEveryType.Hour,
-                DailyFrecuencyStarting = 4.Hours(),
-                DailyFrecuencyEnd = 8.Hours(),
-
-                
-            };
-
-
-            Action act = () => configuration.CalculateNextDate();
-            act.Should().ThrowExactly<ArgumentNullException>().Where(x => x.Message.Contains("This CurrentDate parameter cannot be null")); ;
-
         }
 
         [Fact]
@@ -333,17 +310,17 @@ namespace Test
                 SchedulerEnable = true,
                 SchedulerType = Domain.Enums.OccursType.Recurring,
                 FrequencyOccurType = Domain.Enums.FrecuencyOccurEveryType.Weekly,
-                
+
                 //Daily Configuration
                 DailyFrecuencyOccursType = Domain.Enums.OccursType.Recurring,
                 DailyFrequencyEvery = 2,
                 DailyFrequencyConfigurationType = Domain.Enums.FrecuencyOccurEveryType.Hour,
                 DailyFrecuencyStarting = 4.Hours(),
                 DailyFrecuencyEnd = 8.Hours(),
-               
+
                 //Weekly Configuration
                 WeeklyEvery = 2,
-                DaysWeek = new List<DayOfWeek>() { DayOfWeek.Monday, DayOfWeek.Thursday,DayOfWeek.Friday},
+                DaysWeek = new List<DayOfWeek>() { DayOfWeek.Monday, DayOfWeek.Thursday, DayOfWeek.Friday },
 
                 //Limit Configuration
                 StartDate = 1.November(2021),
@@ -393,8 +370,8 @@ namespace Test
                 WeeklyEvery = 2,
                 DaysWeek = new List<DayOfWeek>() { DayOfWeek.Monday,
                                                    DayOfWeek.Tuesday,
-                                                   DayOfWeek.Wednesday, 
-                                                   DayOfWeek.Thursday, 
+                                                   DayOfWeek.Wednesday,
+                                                   DayOfWeek.Thursday,
                                                    DayOfWeek.Friday ,
                                                    DayOfWeek.Saturday,
                                                    DayOfWeek.Sunday},
@@ -433,10 +410,10 @@ namespace Test
             result[23].Date.Should().Be(28.November(2021).At(8, 00, 00));
             result[24].Date.Should().Be(29.November(2021).At(4, 00, 00));
             result[25].Date.Should().Be(29.November(2021).At(6, 00, 00));
-            result[26].Date.Should().Be(29.November(2021).At(8, 00, 00)); 
+            result[26].Date.Should().Be(29.November(2021).At(8, 00, 00));
             result[26].Description.Should().Be(@"Occurs every 2 weeks on Sunday, Monday, Tuesday, Wednesday, Thursday, Friday and Saturday every 2 Hour between 04:00:00 at 08:00:00 strating on 1/10/2021");
         }
-        
+
         [Fact]
         public void calculate_weekly_frecuency_every_monday()
         {
@@ -472,7 +449,7 @@ namespace Test
             result[3].Date.Should().Be(29.November(2021).At(4, 00, 00));
             result[3].Description.Should().Be(@"Occurs every 2 weeks on Monday every 2 Hour between 04:00:00 at 08:00:00 strating on 1/11/2021");
         }
-      
+
         [Fact]
         public void calculate_weekly_frecuency_every_tuesday()
         {
@@ -492,7 +469,7 @@ namespace Test
 
                 //Weekly Configuration
                 WeeklyEvery = 2,
-                DaysWeek = new List<DayOfWeek>() { DayOfWeek.Tuesday},
+                DaysWeek = new List<DayOfWeek>() { DayOfWeek.Tuesday },
 
                 //Limit Configuration
                 StartDate = 1.November(2021),
@@ -509,7 +486,7 @@ namespace Test
             result[3].Date.Should().Be(30.November(2021).At(4, 00, 00));
             result[3].Description.Should().Be(@"Occurs every 2 weeks on Tuesday every 2 Hour between 04:00:00 at 08:00:00 strating on 1/11/2021");
         }
-       
+
         [Fact]
         public void calculate_weekly_frecuency_every_wednesday()
         {
@@ -544,9 +521,9 @@ namespace Test
             result[1].Date.Should().Be(10.November(2021).At(6, 00, 00));
             result[2].Date.Should().Be(10.November(2021).At(8, 00, 00));
             result[3].Date.Should().Be(1.December(2021).At(4, 00, 00));
-            result[3].Description.Should().Be(@"Occurs every 2 weeks on Wednesday every 2 Hour between 04:00:00 at 08:00:00 strating on 1/11/2021");       
+            result[3].Description.Should().Be(@"Occurs every 2 weeks on Wednesday every 2 Hour between 04:00:00 at 08:00:00 strating on 1/11/2021");
         }
-       
+
         [Fact]
         public void calculate_weekly_frecuency_every_thursday()
         {
@@ -566,7 +543,7 @@ namespace Test
 
                 //Weekly Configuration
                 WeeklyEvery = 2,
-                DaysWeek = new List<DayOfWeek>() {DayOfWeek.Thursday},
+                DaysWeek = new List<DayOfWeek>() { DayOfWeek.Thursday },
 
                 //Limit Configuration
                 StartDate = 1.November(2021),
@@ -583,7 +560,7 @@ namespace Test
             result[3].Date.Should().Be(2.December(2021).At(4, 00, 00));
             result[3].Description.Should().Be(@"Occurs every 2 weeks on Thursday every 2 Hour between 04:00:00 at 08:00:00 strating on 1/11/2021");
         }
-      
+
         [Fact]
         public void calculate_weekly_frecuency_every_friday()
         {
@@ -603,7 +580,7 @@ namespace Test
 
                 //Weekly Configuration
                 WeeklyEvery = 2,
-                DaysWeek = new List<DayOfWeek>() {  DayOfWeek.Friday },
+                DaysWeek = new List<DayOfWeek>() { DayOfWeek.Friday },
 
                 //Limit Configuration
                 StartDate = 1.November(2021),
@@ -620,7 +597,7 @@ namespace Test
             result[3].Date.Should().Be(3.December(2021).At(4, 00, 00));
             result[3].Description.Should().Be(@"Occurs every 2 weeks on Friday every 2 Hour between 04:00:00 at 08:00:00 strating on 1/11/2021");
         }
-      
+
         [Fact]
         public void calculate_weekly_frecuency_every_saturday()
         {
@@ -657,7 +634,7 @@ namespace Test
             result[3].Date.Should().Be(4.December(2021).At(4, 00, 00));
             result[3].Description.Should().Be(@"Occurs every 2 weeks on Saturday every 2 Hour between 04:00:00 at 08:00:00 strating on 1/11/2021");
         }
-       
+
         [Fact]
         public void calculate_weekly_frecuency_every_sunday()
         {
@@ -691,6 +668,862 @@ namespace Test
             result[1].Date.Should().Be(14.November(2021).At(6, 00, 00));
             result[2].Date.Should().Be(14.November(2021).At(8, 00, 00));
             result[2].Description.Should().Be(@"Occurs every 2 weeks on Sunday every 2 Hour between 04:00:00 at 08:00:00 strating on 1/11/2021");
+        }
+
+        [Fact]
+        public void calculate_monthlt_frecuencybydat_day_every()
+        {
+            SchedulerConfiguration configuration = new SchedulerConfiguration
+            {
+                //Scheduler Configuration
+                SchedulerEnable = true,
+                SchedulerType = Domain.Enums.OccursType.Recurring,
+                FrequencyOccurType = Domain.Enums.FrecuencyOccurEveryType.Monthly,
+
+                //Daily Configuration
+                DailyFrecuencyOccursType = Domain.Enums.OccursType.Recurring,
+                DailyFrequencyEvery = 2,
+                DailyFrequencyConfigurationType = Domain.Enums.FrecuencyOccurEveryType.Hour,
+                DailyFrecuencyStarting = 4.Hours(),
+                DailyFrecuencyEnd = 8.Hours(),
+
+                //Monthly Configuration
+                MonthlyFrecuencyByDay = true,
+                MonthlyDay = 3,
+                MonthlyDayOfEvery = 2,
+
+                //Limit Configuration
+                StartDate = 5.April(2021),
+
+                CurrentDate = 1.September(2021).At(2, 00, 00)
+            };
+
+            var result = configuration.CalculateNextDateSerie(4);
+            result.Count.Should().Be(4);
+            result[0].Date.Should().Be(3.September(2021).At(4, 00, 00));
+            result[1].Date.Should().Be(3.September(2021).At(6, 00, 00));
+            result[2].Date.Should().Be(3.September(2021).At(8, 00, 00));
+            result[3].Date.Should().Be(3.November(2021).At(4, 00, 00));
+            result[3].Description.Should().Be(@"Occurs on day 3 every 2 mounths every 2 hours between 04:00:00 and 08:00:00 strating on 5/4/2021");
+        }
+
+        [Fact]
+        public void calculate_monthlt_first_day()
+        {
+            SchedulerConfiguration configuration = new SchedulerConfiguration
+            {
+                //Scheduler Configuration
+                SchedulerEnable = true,
+                SchedulerType = Domain.Enums.OccursType.Recurring,
+                FrequencyOccurType = Domain.Enums.FrecuencyOccurEveryType.Monthly,
+
+                //Daily Configuration
+                DailyFrecuencyOccursType = Domain.Enums.OccursType.Recurring,
+                DailyFrequencyEvery = 2,
+                DailyFrequencyConfigurationType = Domain.Enums.FrecuencyOccurEveryType.Hour,
+                DailyFrecuencyStarting = 4.Hours(),
+                DailyFrecuencyEnd = 8.Hours(),
+
+                //Monthly Configuration
+                MonthlyFrecuencyByPeriod = true,
+                MonthlyPeriodThe = MonthlyPeriod.First,
+                MonthlyPeriodDay = MonthlyPeriodDay.Day,
+                MonthlyPeriodEvery = 1,
+
+                //Limit Configuration
+                StartDate = 5.April(2021),
+
+                CurrentDate = 25.July(2021).At(2, 00, 00)
+            };
+            var result = configuration.CalculateNextDateSerie(6);
+            result.Count.Should().Be(6);
+            result[0].Date.Should().Be(1.August(2021).At(4, 00, 00));
+            result[1].Date.Should().Be(1.August(2021).At(6, 00, 00));
+            result[2].Date.Should().Be(1.August(2021).At(8, 00, 00));
+            result[3].Date.Should().Be(1.September(2021).At(4, 00, 00));
+            result[4].Date.Should().Be(1.September(2021).At(6, 00, 00));
+            result[5].Date.Should().Be(1.September(2021).At(8, 00, 00));
+            result[5].Description.Should().Be(@"Occurs the First Day of very 1 mounth every 2 hours between 04:00:00 and 08:00:00 strating on 5/4/2021");
+        }
+        
+        [Fact]
+        public void calculate_monthlt_second_day()
+        {
+            SchedulerConfiguration configuration = new SchedulerConfiguration
+            {
+                //Scheduler Configuration
+                SchedulerEnable = true,
+                SchedulerType = Domain.Enums.OccursType.Recurring,
+                FrequencyOccurType = Domain.Enums.FrecuencyOccurEveryType.Monthly,
+
+                //Daily Configuration
+                DailyFrecuencyOccursType = Domain.Enums.OccursType.Recurring,
+                DailyFrequencyEvery = 2,
+                DailyFrequencyConfigurationType = Domain.Enums.FrecuencyOccurEveryType.Hour,
+                DailyFrecuencyStarting = 4.Hours(),
+                DailyFrecuencyEnd = 8.Hours(),
+
+                //Monthly Configuration
+                MonthlyFrecuencyByPeriod = true,
+                MonthlyPeriodThe = MonthlyPeriod.Second,
+                MonthlyPeriodDay = MonthlyPeriodDay.Day,
+                MonthlyPeriodEvery = 1,
+
+                //Limit Configuration
+                StartDate = 5.April(2021),
+
+                CurrentDate = 25.July(2021).At(2, 00, 00)
+            };
+            var result = configuration.CalculateNextDateSerie(6);
+            result.Count.Should().Be(6);
+            result[0].Date.Should().Be(2.August(2021).At(4, 00, 00));
+            result[1].Date.Should().Be(2.August(2021).At(6, 00, 00));
+            result[2].Date.Should().Be(2.August(2021).At(8, 00, 00));
+            result[3].Date.Should().Be(2.September(2021).At(4, 00, 00));
+            result[4].Date.Should().Be(2.September(2021).At(6, 00, 00));
+            result[5].Date.Should().Be(2.September(2021).At(8, 00, 00));
+            result[5].Description.Should().Be(@"Occurs the Second Day of very 1 mounth every 2 hours between 04:00:00 and 08:00:00 strating on 5/4/2021");
+        }
+        
+        [Fact]
+        public void calculate_monthlt_third_day()
+        {
+            SchedulerConfiguration configuration = new SchedulerConfiguration
+            {
+                //Scheduler Configuration
+                SchedulerEnable = true,
+                SchedulerType = Domain.Enums.OccursType.Recurring,
+                FrequencyOccurType = Domain.Enums.FrecuencyOccurEveryType.Monthly,
+
+                //Daily Configuration
+                DailyFrecuencyOccursType = Domain.Enums.OccursType.Recurring,
+                DailyFrequencyEvery = 2,
+                DailyFrequencyConfigurationType = Domain.Enums.FrecuencyOccurEveryType.Hour,
+                DailyFrecuencyStarting = 4.Hours(),
+                DailyFrecuencyEnd = 8.Hours(),
+
+                //Monthly Configuration
+                MonthlyFrecuencyByPeriod = true,
+                MonthlyPeriodThe = MonthlyPeriod.Third,
+                MonthlyPeriodDay = MonthlyPeriodDay.Day,
+                MonthlyPeriodEvery = 1,
+
+                //Limit Configuration
+                StartDate = 5.April(2021),
+
+                CurrentDate = 25.July(2021).At(2, 00, 00)
+            };
+            var result = configuration.CalculateNextDateSerie(6);
+            result.Count.Should().Be(6);
+            result[0].Date.Should().Be(3.August(2021).At(4, 00, 00));
+            result[1].Date.Should().Be(3.August(2021).At(6, 00, 00));
+            result[2].Date.Should().Be(3.August(2021).At(8, 00, 00));
+            result[3].Date.Should().Be(3.September(2021).At(4, 00, 00));
+            result[4].Date.Should().Be(3.September(2021).At(6, 00, 00));
+            result[5].Date.Should().Be(3.September(2021).At(8, 00, 00));
+            result[5].Description.Should().Be(@"Occurs the Third Day of very 1 mounth every 2 hours between 04:00:00 and 08:00:00 strating on 5/4/2021");
+        }
+      
+        [Fact]
+        public void calculate_monthlt_fourth_day()
+        {
+            SchedulerConfiguration configuration = new SchedulerConfiguration
+            {
+                //Scheduler Configuration
+                SchedulerEnable = true,
+                SchedulerType = Domain.Enums.OccursType.Recurring,
+                FrequencyOccurType = Domain.Enums.FrecuencyOccurEveryType.Monthly,
+
+                //Daily Configuration
+                DailyFrecuencyOccursType = Domain.Enums.OccursType.Recurring,
+                DailyFrequencyEvery = 2,
+                DailyFrequencyConfigurationType = Domain.Enums.FrecuencyOccurEveryType.Hour,
+                DailyFrecuencyStarting = 4.Hours(),
+                DailyFrecuencyEnd = 8.Hours(),
+
+                //Monthly Configuration
+                MonthlyFrecuencyByPeriod = true,
+                MonthlyPeriodThe = MonthlyPeriod.Fourth,
+                MonthlyPeriodDay = MonthlyPeriodDay.Day,
+                MonthlyPeriodEvery = 1,
+
+                //Limit Configuration
+                StartDate = 5.April(2021),
+
+                CurrentDate = 25.July(2021).At(2, 00, 00)
+            };
+            var result = configuration.CalculateNextDateSerie(6);
+            result.Count.Should().Be(6);
+            result[0].Date.Should().Be(4.August(2021).At(4, 00, 00));
+            result[1].Date.Should().Be(4.August(2021).At(6, 00, 00));
+            result[2].Date.Should().Be(4.August(2021).At(8, 00, 00));
+            result[3].Date.Should().Be(4.September(2021).At(4, 00, 00));
+            result[4].Date.Should().Be(4.September(2021).At(6, 00, 00));
+            result[5].Date.Should().Be(4.September(2021).At(8, 00, 00));
+            result[5].Description.Should().Be(@"Occurs the Fourth Day of very 1 mounth every 2 hours between 04:00:00 and 08:00:00 strating on 5/4/2021");
+        }
+       
+        [Fact]
+        public void calculate_monthlt_last_day()
+        {
+            SchedulerConfiguration configuration = new SchedulerConfiguration
+            {
+                //Scheduler Configuration
+                SchedulerEnable = true,
+                SchedulerType = Domain.Enums.OccursType.Recurring,
+                FrequencyOccurType = Domain.Enums.FrecuencyOccurEveryType.Monthly,
+
+                //Daily Configuration
+                DailyFrecuencyOccursType = Domain.Enums.OccursType.Recurring,
+                DailyFrequencyEvery = 2,
+                DailyFrequencyConfigurationType = Domain.Enums.FrecuencyOccurEveryType.Hour,
+                DailyFrecuencyStarting = 4.Hours(),
+                DailyFrecuencyEnd = 8.Hours(),
+
+                //Monthly Configuration
+                MonthlyFrecuencyByPeriod = true,
+                MonthlyPeriodThe = MonthlyPeriod.Last,
+                MonthlyPeriodDay = MonthlyPeriodDay.Day,
+                MonthlyPeriodEvery = 1,
+
+                //Limit Configuration
+                StartDate = 5.April(2021),
+
+                CurrentDate = 1.August(2021).At(2, 00, 00)
+            };
+            var result = configuration.CalculateNextDateSerie(6);
+            result.Count.Should().Be(6);
+            result[0].Date.Should().Be(31.August(2021).At(4, 00, 00));
+            result[1].Date.Should().Be(31.August(2021).At(6, 00, 00));
+            result[2].Date.Should().Be(31.August(2021).At(8, 00, 00));
+            result[3].Date.Should().Be(30.September(2021).At(4, 00, 00));
+            result[4].Date.Should().Be(30.September(2021).At(6, 00, 00));
+            result[5].Date.Should().Be(30.September(2021).At(8, 00, 00));
+            result[5].Description.Should().Be(@"Occurs the Last Day of very 1 mounth every 2 hours between 04:00:00 and 08:00:00 strating on 5/4/2021");
+        }
+       
+        [Fact]
+        public void calculate_monthlt_first_monday()
+        {
+            SchedulerConfiguration configuration = new SchedulerConfiguration
+            {
+                //Scheduler Configuration
+                SchedulerEnable = true,
+                SchedulerType = Domain.Enums.OccursType.Recurring,
+                FrequencyOccurType = Domain.Enums.FrecuencyOccurEveryType.Monthly,
+
+                //Daily Configuration
+                DailyFrecuencyOccursType = Domain.Enums.OccursType.Recurring,
+                DailyFrequencyEvery = 2,
+                DailyFrequencyConfigurationType = Domain.Enums.FrecuencyOccurEveryType.Hour,
+                DailyFrecuencyStarting = 4.Hours(),
+                DailyFrecuencyEnd = 8.Hours(),
+
+                //Monthly Configuration
+                MonthlyFrecuencyByPeriod = true,
+                MonthlyPeriodThe = MonthlyPeriod.First,
+                MonthlyPeriodDay = MonthlyPeriodDay.Monday,
+                MonthlyPeriodEvery = 1,
+
+                //Limit Configuration
+                StartDate = 5.April(2021),
+
+                CurrentDate = 1.August(2021).At(2, 00, 00)
+            };
+            var result = configuration.CalculateNextDateSerie(6);
+            result.Count.Should().Be(6);
+            result[0].Date.Should().Be(2.August(2021).At(4, 00, 00));
+            result[1].Date.Should().Be(2.August(2021).At(6, 00, 00));
+            result[2].Date.Should().Be(2.August(2021).At(8, 00, 00));
+            result[3].Date.Should().Be(6.September(2021).At(4, 00, 00));
+            result[4].Date.Should().Be(6.September(2021).At(6, 00, 00));
+            result[5].Date.Should().Be(6.September(2021).At(8, 00, 00));
+            result[5].Description.Should().Be(@"Occurs the First Monday of very 1 mounth every 2 hours between 04:00:00 and 08:00:00 strating on 5/4/2021");
+        }
+       
+        [Fact]
+        public void calculate_monthlt_last_monday()
+        {
+            SchedulerConfiguration configuration = new SchedulerConfiguration
+            {
+                //Scheduler Configuration
+                SchedulerEnable = true,
+                SchedulerType = Domain.Enums.OccursType.Recurring,
+                FrequencyOccurType = Domain.Enums.FrecuencyOccurEveryType.Monthly,
+
+                //Daily Configuration
+                DailyFrecuencyOccursType = Domain.Enums.OccursType.Recurring,
+                DailyFrequencyEvery = 2,
+                DailyFrequencyConfigurationType = Domain.Enums.FrecuencyOccurEveryType.Hour,
+                DailyFrecuencyStarting = 4.Hours(),
+                DailyFrecuencyEnd = 8.Hours(),
+
+                //Monthly Configuration
+                MonthlyFrecuencyByPeriod = true,
+                MonthlyPeriodThe = MonthlyPeriod.Last,
+                MonthlyPeriodDay = MonthlyPeriodDay.Monday,
+                MonthlyPeriodEvery = 1,
+
+                //Limit Configuration
+                StartDate = 5.April(2021),
+
+                CurrentDate = 1.August(2021).At(2, 00, 00)
+            };
+            var result = configuration.CalculateNextDateSerie(6);
+            result.Count.Should().Be(6);
+            result[0].Date.Should().Be(30.August(2021).At(4, 00, 00));
+            result[1].Date.Should().Be(30.August(2021).At(6, 00, 00));
+            result[2].Date.Should().Be(30.August(2021).At(8, 00, 00));
+            result[3].Date.Should().Be(27.September(2021).At(4, 00, 00));
+            result[4].Date.Should().Be(27.September(2021).At(6, 00, 00));
+            result[5].Date.Should().Be(27.September(2021).At(8, 00, 00));
+            result[5].Description.Should().Be(@"Occurs the Last Monday of very 1 mounth every 2 hours between 04:00:00 and 08:00:00 strating on 5/4/2021");
+        }
+       
+        [Fact]
+        public void calculate_monthlt_second_Tuesday()
+        {
+            SchedulerConfiguration configuration = new SchedulerConfiguration
+            {
+                //Scheduler Configuration
+                SchedulerEnable = true,
+                SchedulerType = Domain.Enums.OccursType.Recurring,
+                FrequencyOccurType = Domain.Enums.FrecuencyOccurEveryType.Monthly,
+
+                //Daily Configuration
+                DailyFrecuencyOccursType = Domain.Enums.OccursType.Recurring,
+                DailyFrequencyEvery = 2,
+                DailyFrequencyConfigurationType = Domain.Enums.FrecuencyOccurEveryType.Hour,
+                DailyFrecuencyStarting = 4.Hours(),
+                DailyFrecuencyEnd = 8.Hours(),
+
+                //Monthly Configuration
+                MonthlyFrecuencyByPeriod = true,
+                MonthlyPeriodThe = MonthlyPeriod.Second,
+                MonthlyPeriodDay = MonthlyPeriodDay.Tuesday,
+                MonthlyPeriodEvery = 1,
+
+                //Limit Configuration
+                StartDate = 5.April(2021),
+
+                CurrentDate = 1.August(2021).At(2, 00, 00)
+            };
+            var result = configuration.CalculateNextDateSerie(6);
+            result.Count.Should().Be(6);
+            result[0].Date.Should().Be(10.August(2021).At(4, 00, 00));
+            result[1].Date.Should().Be(10.August(2021).At(6, 00, 00));
+            result[2].Date.Should().Be(10.August(2021).At(8, 00, 00));
+            result[3].Date.Should().Be(14.September(2021).At(4, 00, 00));
+            result[4].Date.Should().Be(14.September(2021).At(6, 00, 00));
+            result[5].Date.Should().Be(14.September(2021).At(8, 00, 00));
+            result[5].Description.Should().Be(@"Occurs the Second Tuesday of very 1 mounth every 2 hours between 04:00:00 and 08:00:00 strating on 5/4/2021");
+        }
+       
+        [Fact]
+        public void calculate_monthlt_third_wednesday()
+        {
+            SchedulerConfiguration configuration = new SchedulerConfiguration
+            {
+                //Scheduler Configuration
+                SchedulerEnable = true,
+                SchedulerType = Domain.Enums.OccursType.Recurring,
+                FrequencyOccurType = Domain.Enums.FrecuencyOccurEveryType.Monthly,
+
+                //Daily Configuration
+                DailyFrecuencyOccursType = Domain.Enums.OccursType.Recurring,
+                DailyFrequencyEvery = 2,
+                DailyFrequencyConfigurationType = Domain.Enums.FrecuencyOccurEveryType.Hour,
+                DailyFrecuencyStarting = 4.Hours(),
+                DailyFrecuencyEnd = 8.Hours(),
+
+                //Monthly Configuration
+                MonthlyFrecuencyByPeriod = true,
+                MonthlyPeriodThe = MonthlyPeriod.Third,
+                MonthlyPeriodDay = MonthlyPeriodDay.Wednesday,
+                MonthlyPeriodEvery = 1,
+
+                //Limit Configuration
+                StartDate = 5.April(2021),
+
+                CurrentDate = 1.August(2021).At(2, 00, 00)
+            };
+            var result = configuration.CalculateNextDateSerie(6);
+            result.Count.Should().Be(6);
+            result[0].Date.Should().Be(18.August(2021).At(4, 00, 00));
+            result[1].Date.Should().Be(18.August(2021).At(6, 00, 00));
+            result[2].Date.Should().Be(18.August(2021).At(8, 00, 00));
+            result[3].Date.Should().Be(15.September(2021).At(4, 00, 00));
+            result[4].Date.Should().Be(15.September(2021).At(6, 00, 00));
+            result[5].Date.Should().Be(15.September(2021).At(8, 00, 00));
+            result[5].Description.Should().Be(@"Occurs the Third Wednesday of very 1 mounth every 2 hours between 04:00:00 and 08:00:00 strating on 5/4/2021");
+        }
+       
+        [Fact]
+        public void calculate_monthlt_fourth_thursday()
+        {
+            SchedulerConfiguration configuration = new SchedulerConfiguration
+            {
+                //Scheduler Configuration
+                SchedulerEnable = true,
+                SchedulerType = Domain.Enums.OccursType.Recurring,
+                FrequencyOccurType = Domain.Enums.FrecuencyOccurEveryType.Monthly,
+
+                //Daily Configuration
+                DailyFrecuencyOccursType = Domain.Enums.OccursType.Recurring,
+                DailyFrequencyEvery = 2,
+                DailyFrequencyConfigurationType = Domain.Enums.FrecuencyOccurEveryType.Hour,
+                DailyFrecuencyStarting = 4.Hours(),
+                DailyFrecuencyEnd = 8.Hours(),
+
+                //Monthly Configuration
+                MonthlyFrecuencyByPeriod = true,
+                MonthlyPeriodThe = MonthlyPeriod.Fourth,
+                MonthlyPeriodDay = MonthlyPeriodDay.Thursday,
+                MonthlyPeriodEvery = 3,
+
+                //Limit Configuration
+                StartDate = 5.April(2021),
+
+                CurrentDate = 1.August(2021).At(2, 00, 00)
+            };
+            var result = configuration.CalculateNextDateSerie(6);
+            result.Count.Should().Be(6);
+            result[0].Date.Should().Be(26.August(2021).At(4, 00, 00));
+            result[1].Date.Should().Be(26.August(2021).At(6, 00, 00));
+            result[2].Date.Should().Be(26.August(2021).At(8, 00, 00));
+            result[3].Date.Should().Be(25.November(2021).At(4, 00, 00));
+            result[4].Date.Should().Be(25.November(2021).At(6, 00, 00));
+            result[5].Date.Should().Be(25.November(2021).At(8, 00, 00));
+            result[5].Description.Should().Be(@"Occurs the Fourth Thursday of very 3 mounths every 2 hours between 04:00:00 and 08:00:00 strating on 5/4/2021");
+        }
+       
+        [Fact]
+        public void calculate_monthlt_last_friday()
+        {
+            SchedulerConfiguration configuration = new SchedulerConfiguration
+            {
+                //Scheduler Configuration
+                SchedulerEnable = true,
+                SchedulerType = Domain.Enums.OccursType.Recurring,
+                FrequencyOccurType = Domain.Enums.FrecuencyOccurEveryType.Monthly,
+
+                //Daily Configuration
+                DailyFrecuencyOccursType = Domain.Enums.OccursType.Recurring,
+                DailyFrequencyEvery = 2,
+                DailyFrequencyConfigurationType = Domain.Enums.FrecuencyOccurEveryType.Hour,
+                DailyFrecuencyStarting = 4.Hours(),
+                DailyFrecuencyEnd = 8.Hours(),
+
+                //Monthly Configuration
+                MonthlyFrecuencyByPeriod = true,
+                MonthlyPeriodThe = MonthlyPeriod.Last,
+                MonthlyPeriodDay = MonthlyPeriodDay.Friday,
+                MonthlyPeriodEvery = 2,
+
+                //Limit Configuration
+                StartDate = 5.April(2021),
+
+                CurrentDate = 1.August(2021).At(2, 00, 00)
+            };
+            var result = configuration.CalculateNextDateSerie(6);
+            result.Count.Should().Be(6);
+            result[0].Date.Should().Be(27.August(2021).At(4, 00, 00));
+            result[1].Date.Should().Be(27.August(2021).At(6, 00, 00));
+            result[2].Date.Should().Be(27.August(2021).At(8, 00, 00));
+            result[3].Date.Should().Be(29.October(2021).At(4, 00, 00));
+            result[4].Date.Should().Be(29.October(2021).At(6, 00, 00));
+            result[5].Date.Should().Be(29.October(2021).At(8, 00, 00));
+            result[5].Description.Should().Be(@"Occurs the Last Friday of very 2 mounths every 2 hours between 04:00:00 and 08:00:00 strating on 5/4/2021");
+        }
+      
+        [Fact]
+        public void calculate_monthlt_first_weekday()
+        {
+            SchedulerConfiguration configuration = new SchedulerConfiguration
+            {
+                //Scheduler Configuration
+                SchedulerEnable = true,
+                SchedulerType = Domain.Enums.OccursType.Recurring,
+                FrequencyOccurType = Domain.Enums.FrecuencyOccurEveryType.Monthly,
+
+                //Daily Configuration
+                DailyFrecuencyOccursType = Domain.Enums.OccursType.Recurring,
+                DailyFrequencyEvery = 2,
+                DailyFrequencyConfigurationType = Domain.Enums.FrecuencyOccurEveryType.Hour,
+                DailyFrecuencyStarting = 4.Hours(),
+                DailyFrecuencyEnd = 8.Hours(),
+
+                //Monthly Configuration
+                MonthlyFrecuencyByPeriod = true,
+                MonthlyPeriodThe = MonthlyPeriod.First,
+                MonthlyPeriodDay = MonthlyPeriodDay.Weekday,
+                MonthlyPeriodEvery = 1,
+
+                //Limit Configuration
+                StartDate = 5.April(2021),
+
+                CurrentDate = 1.August(2021).At(2, 00, 00)
+            };
+            var result = configuration.CalculateNextDateSerie(6);
+            result.Count.Should().Be(6);
+            result[0].Date.Should().Be(2.August(2021).At(4, 00, 00));
+            result[1].Date.Should().Be(2.August(2021).At(6, 00, 00));
+            result[2].Date.Should().Be(2.August(2021).At(8, 00, 00));
+            result[3].Date.Should().Be(1.September(2021).At(4, 00, 00));
+            result[4].Date.Should().Be(1.September(2021).At(6, 00, 00));
+            result[5].Date.Should().Be(1.September(2021).At(8, 00, 00));
+            result[5].Description.Should().Be(@"Occurs the First Weekday of very 1 mounth every 2 hours between 04:00:00 and 08:00:00 strating on 5/4/2021");           
+        }
+       
+        [Fact]
+        public void calculate_monthlt_second_weekday()
+        {
+            SchedulerConfiguration configuration = new SchedulerConfiguration
+            {
+                //Scheduler Configuration
+                SchedulerEnable = true,
+                SchedulerType = Domain.Enums.OccursType.Recurring,
+                FrequencyOccurType = Domain.Enums.FrecuencyOccurEveryType.Monthly,
+
+                //Daily Configuration
+                DailyFrecuencyOccursType = Domain.Enums.OccursType.Recurring,
+                DailyFrequencyEvery = 2,
+                DailyFrequencyConfigurationType = Domain.Enums.FrecuencyOccurEveryType.Hour,
+                DailyFrecuencyStarting = 4.Hours(),
+                DailyFrecuencyEnd = 8.Hours(),
+
+                //Monthly Configuration
+                MonthlyFrecuencyByPeriod = true,
+                MonthlyPeriodThe = MonthlyPeriod.Second,
+                MonthlyPeriodDay = MonthlyPeriodDay.Weekday,
+                MonthlyPeriodEvery = 1,
+
+                //Limit Configuration
+                StartDate = 5.April(2021),
+
+                CurrentDate = 1.August(2021).At(2, 00, 00)
+            };
+            var result = configuration.CalculateNextDateSerie(6);
+            result.Count.Should().Be(6);
+            result[0].Date.Should().Be(3.August(2021).At(4, 00, 00));
+            result[1].Date.Should().Be(3.August(2021).At(6, 00, 00));
+            result[2].Date.Should().Be(3.August(2021).At(8, 00, 00));
+            result[3].Date.Should().Be(2.September(2021).At(4, 00, 00));
+            result[4].Date.Should().Be(2.September(2021).At(6, 00, 00));
+            result[5].Date.Should().Be(2.September(2021).At(8, 00, 00));
+            result[5].Description.Should().Be(@"Occurs the Second Weekday of very 1 mounth every 2 hours between 04:00:00 and 08:00:00 strating on 5/4/2021");
+        }
+       
+        [Fact]
+        public void calculate_monthlt_third_weekday()
+        {
+            SchedulerConfiguration configuration = new SchedulerConfiguration
+            {
+                //Scheduler Configuration
+                SchedulerEnable = true,
+                SchedulerType = Domain.Enums.OccursType.Recurring,
+                FrequencyOccurType = Domain.Enums.FrecuencyOccurEveryType.Monthly,
+
+                //Daily Configuration
+                DailyFrecuencyOccursType = Domain.Enums.OccursType.Recurring,
+                DailyFrequencyEvery = 1,
+                DailyFrequencyConfigurationType = Domain.Enums.FrecuencyOccurEveryType.Hour,
+                DailyFrecuencyStarting = 4.Hours(),
+                DailyFrecuencyEnd = 6.Hours(),
+
+                //Monthly Configuration
+                MonthlyFrecuencyByPeriod = true,
+                MonthlyPeriodThe = MonthlyPeriod.Third,
+                MonthlyPeriodDay = MonthlyPeriodDay.Weekday,
+                MonthlyPeriodEvery = 1,
+
+                //Limit Configuration
+                StartDate = 5.April(2021),
+
+                CurrentDate = 1.August(2021).At(2, 00, 00)
+            };
+            var result = configuration.CalculateNextDateSerie(6);
+            result.Count.Should().Be(6);
+            result[0].Date.Should().Be(4.August(2021).At(4, 00, 00));
+            result[1].Date.Should().Be(4.August(2021).At(5, 00, 00));
+            result[2].Date.Should().Be(4.August(2021).At(6, 00, 00));
+            result[3].Date.Should().Be(3.September(2021).At(4, 00, 00));
+            result[4].Date.Should().Be(3.September(2021).At(5, 00, 00));
+            result[5].Date.Should().Be(3.September(2021).At(6, 00, 00));
+            result[5].Description.Should().Be(@"Occurs the Third Weekday of very 1 mounth every 1 hour between 04:00:00 and 06:00:00 strating on 5/4/2021");
+        }
+       
+        [Fact]
+        public void calculate_monthlt_fourth_weekday()
+        {
+            SchedulerConfiguration configuration = new SchedulerConfiguration
+            {
+                //Scheduler Configuration
+                SchedulerEnable = true,
+                SchedulerType = Domain.Enums.OccursType.Recurring,
+                FrequencyOccurType = Domain.Enums.FrecuencyOccurEveryType.Monthly,
+
+                //Daily Configuration
+                DailyFrecuencyOccursType = Domain.Enums.OccursType.Recurring,
+                DailyFrequencyEvery = 2,
+                DailyFrequencyConfigurationType = Domain.Enums.FrecuencyOccurEveryType.Hour,
+                DailyFrecuencyStarting = 4.Hours(),
+                DailyFrecuencyEnd = 8.Hours(),
+
+                //Monthly Configuration
+                MonthlyFrecuencyByPeriod = true,
+                MonthlyPeriodThe = MonthlyPeriod.Fourth,
+                MonthlyPeriodDay = MonthlyPeriodDay.Weekday,
+                MonthlyPeriodEvery = 1,
+
+                //Limit Configuration
+                StartDate = 5.April(2021),
+
+                CurrentDate = 1.August(2021).At(2, 00, 00)
+            };
+            var result = configuration.CalculateNextDateSerie(6);
+            result.Count.Should().Be(6);
+            result[0].Date.Should().Be(5.August(2021).At(4, 00, 00));
+            result[1].Date.Should().Be(5.August(2021).At(6, 00, 00));
+            result[2].Date.Should().Be(5.August(2021).At(8, 00, 00));
+            result[3].Date.Should().Be(6.September(2021).At(4, 00, 00));
+            result[4].Date.Should().Be(6.September(2021).At(6, 00, 00));
+            result[5].Date.Should().Be(6.September(2021).At(8, 00, 00));
+            result[5].Description.Should().Be(@"Occurs the Fourth Weekday of very 1 mounth every 2 hours between 04:00:00 and 08:00:00 strating on 5/4/2021");
+        }
+       
+        [Fact]
+        public void calculate_monthlt_last_weekday()
+        {
+            SchedulerConfiguration configuration = new SchedulerConfiguration
+            {
+                //Scheduler Configuration
+                SchedulerEnable = true,
+                SchedulerType = Domain.Enums.OccursType.Recurring,
+                FrequencyOccurType = Domain.Enums.FrecuencyOccurEveryType.Monthly,
+
+                //Daily Configuration
+                DailyFrecuencyOccursType = Domain.Enums.OccursType.Recurring,
+                DailyFrequencyEvery = 2,
+                DailyFrequencyConfigurationType = Domain.Enums.FrecuencyOccurEveryType.Hour,
+                DailyFrecuencyStarting = 4.Hours(),
+                DailyFrecuencyEnd = 8.Hours(),
+
+                //Monthly Configuration
+                MonthlyFrecuencyByPeriod = true,
+                MonthlyPeriodThe = MonthlyPeriod.Last,
+                MonthlyPeriodDay = MonthlyPeriodDay.Weekday,
+                MonthlyPeriodEvery = 1,
+
+                //Limit Configuration
+                StartDate = 5.April(2021),
+
+                CurrentDate = 1.August(2021).At(2, 00, 00)
+            };
+            var result = configuration.CalculateNextDateSerie(6);
+            result.Count.Should().Be(6);
+            result[0].Date.Should().Be(31.August(2021).At(4, 00, 00));
+            result[1].Date.Should().Be(31.August(2021).At(6, 00, 00));
+            result[2].Date.Should().Be(31.August(2021).At(8, 00, 00));
+            result[3].Date.Should().Be(30.September(2021).At(4, 00, 00));
+            result[4].Date.Should().Be(30.September(2021).At(6, 00, 00));
+            result[5].Date.Should().Be(30.September(2021).At(8, 00, 00));
+            result[5].Description.Should().Be(@"Occurs the Last Weekday of very 1 mounth every 2 hours between 04:00:00 and 08:00:00 strating on 5/4/2021");
+        }
+
+        [Fact]
+        public void calculate_monthlt_first_weekendDay()
+        {
+            SchedulerConfiguration configuration = new SchedulerConfiguration
+            {
+                //Scheduler Configuration
+                SchedulerEnable = true,
+                SchedulerType = Domain.Enums.OccursType.Recurring,
+                FrequencyOccurType = Domain.Enums.FrecuencyOccurEveryType.Monthly,
+
+                //Daily Configuration
+                DailyFrecuencyOccursType = Domain.Enums.OccursType.Recurring,
+                DailyFrequencyEvery = 2,
+                DailyFrequencyConfigurationType = Domain.Enums.FrecuencyOccurEveryType.Hour,
+                DailyFrecuencyStarting = 4.Hours(),
+                DailyFrecuencyEnd = 8.Hours(),
+
+                //Monthly Configuration
+                MonthlyFrecuencyByPeriod = true,
+                MonthlyPeriodThe = MonthlyPeriod.First,
+                MonthlyPeriodDay = MonthlyPeriodDay.WeekendDay,
+                MonthlyPeriodEvery = 1,
+
+                //Limit Configuration
+                StartDate = 5.April(2021),
+
+                CurrentDate = 1.December(2021).At(2, 00, 00)
+            };
+            var result = configuration.CalculateNextDateSerie(6);
+            result.Count.Should().Be(6);
+            result[0].Date.Should().Be(4.December(2021).At(4, 00, 00));
+            result[1].Date.Should().Be(4.December(2021).At(6, 00, 00));
+            result[2].Date.Should().Be(4.December(2021).At(8, 00, 00));
+            result[3].Date.Should().Be(1.January(2022).At(4, 00, 00));
+            result[4].Date.Should().Be(1.January(2022).At(6, 00, 00));
+            result[5].Date.Should().Be(1.January(2022).At(8, 00, 00));
+            result[5].Description.Should().Be(@"Occurs the First WeekendDay of very 1 mounth every 2 hours between 04:00:00 and 08:00:00 strating on 5/4/2021");
+        }
+
+        [Fact]
+        public void calculate_monthlt_second_weekendDay()
+        {
+            SchedulerConfiguration configuration = new SchedulerConfiguration
+            {
+                //Scheduler Configuration
+                SchedulerEnable = true,
+                SchedulerType = Domain.Enums.OccursType.Recurring,
+                FrequencyOccurType = Domain.Enums.FrecuencyOccurEveryType.Monthly,
+
+                //Daily Configuration
+                DailyFrecuencyOccursType = Domain.Enums.OccursType.Recurring,
+                DailyFrequencyEvery = 2,
+                DailyFrequencyConfigurationType = Domain.Enums.FrecuencyOccurEveryType.Hour,
+                DailyFrecuencyStarting = 4.Hours(),
+                DailyFrecuencyEnd = 8.Hours(),
+
+                //Monthly Configuration
+                MonthlyFrecuencyByPeriod = true,
+                MonthlyPeriodThe = MonthlyPeriod.Second,
+                MonthlyPeriodDay = MonthlyPeriodDay.WeekendDay,
+                MonthlyPeriodEvery = 2,
+
+                //Limit Configuration
+                StartDate = 5.April(2021),
+
+                CurrentDate = 1.December(2021).At(2, 00, 00)
+            };
+            var result = configuration.CalculateNextDateSerie(6);
+            result.Count.Should().Be(6);
+            result[0].Date.Should().Be(5.December(2021).At(4, 00, 00));
+            result[1].Date.Should().Be(5.December(2021).At(6, 00, 00));
+            result[2].Date.Should().Be(5.December(2021).At(8, 00, 00));
+            result[3].Date.Should().Be(6.February(2022).At(4, 00, 00));
+            result[4].Date.Should().Be(6.February(2022).At(6, 00, 00));
+            result[5].Date.Should().Be(6.February(2022).At(8, 00, 00));
+            result[5].Description.Should().Be(@"Occurs the Second WeekendDay of very 2 mounths every 2 hours between 04:00:00 and 08:00:00 strating on 5/4/2021");
+        }
+
+        [Fact]
+        public void calculate_monthlt_third_weekendDay()
+        {
+            SchedulerConfiguration configuration = new SchedulerConfiguration
+            {
+                //Scheduler Configuration
+                SchedulerEnable = true,
+                SchedulerType = Domain.Enums.OccursType.Recurring,
+                FrequencyOccurType = Domain.Enums.FrecuencyOccurEveryType.Monthly,
+
+                //Daily Configuration
+                DailyFrecuencyOccursType = Domain.Enums.OccursType.Recurring,
+                DailyFrequencyEvery = 2,
+                DailyFrequencyConfigurationType = Domain.Enums.FrecuencyOccurEveryType.Hour,
+                DailyFrecuencyStarting = 4.Hours(),
+                DailyFrecuencyEnd = 8.Hours(),
+
+                //Monthly Configuration
+                MonthlyFrecuencyByPeriod = true,
+                MonthlyPeriodThe = MonthlyPeriod.Third,
+                MonthlyPeriodDay = MonthlyPeriodDay.WeekendDay,
+                MonthlyPeriodEvery = 2,
+
+                //Limit Configuration
+                StartDate = 5.April(2021),
+
+                CurrentDate = 1.December(2021).At(2, 00, 00)
+            };
+            var result = configuration.CalculateNextDateSerie(6);
+            result.Count.Should().Be(6);
+            result[0].Date.Should().Be(11.December(2021).At(4, 00, 00));
+            result[1].Date.Should().Be(11.December(2021).At(6, 00, 00));
+            result[2].Date.Should().Be(11.December(2021).At(8, 00, 00));
+            result[3].Date.Should().Be(12.February(2022).At(4, 00, 00));
+            result[4].Date.Should().Be(12.February(2022).At(6, 00, 00));
+            result[5].Date.Should().Be(12.February(2022).At(8, 00, 00));
+            result[5].Description.Should().Be(@"Occurs the Third WeekendDay of very 2 mounths every 2 hours between 04:00:00 and 08:00:00 strating on 5/4/2021");
+        }
+
+        [Fact]
+        public void calculate_monthlt_fourth_weekendDay()
+        {
+            SchedulerConfiguration configuration = new SchedulerConfiguration
+            {
+                //Scheduler Configuration
+                SchedulerEnable = true,
+                SchedulerType = Domain.Enums.OccursType.Recurring,
+                FrequencyOccurType = Domain.Enums.FrecuencyOccurEveryType.Monthly,
+
+                //Daily Configuration
+                DailyFrecuencyOccursType = Domain.Enums.OccursType.Recurring,
+                DailyFrequencyEvery = 2,
+                DailyFrequencyConfigurationType = Domain.Enums.FrecuencyOccurEveryType.Hour,
+                DailyFrecuencyStarting = 4.Hours(),
+                DailyFrecuencyEnd = 8.Hours(),
+
+                //Monthly Configuration
+                MonthlyFrecuencyByPeriod = true,
+                MonthlyPeriodThe = MonthlyPeriod.Fourth,
+                MonthlyPeriodDay = MonthlyPeriodDay.WeekendDay,
+                MonthlyPeriodEvery = 2,
+
+                //Limit Configuration
+                StartDate = 5.April(2021),
+
+                CurrentDate = 1.December(2021).At(2, 00, 00)
+            };
+            var result = configuration.CalculateNextDateSerie(6);
+            result.Count.Should().Be(6);
+            result[0].Date.Should().Be(12.December(2021).At(4, 00, 00));
+            result[1].Date.Should().Be(12.December(2021).At(6, 00, 00));
+            result[2].Date.Should().Be(12.December(2021).At(8, 00, 00));
+            result[3].Date.Should().Be(13.February(2022).At(4, 00, 00));
+            result[4].Date.Should().Be(13.February(2022).At(6, 00, 00));
+            result[5].Date.Should().Be(13.February(2022).At(8, 00, 00));
+            result[5].Description.Should().Be(@"Occurs the Fourth WeekendDay of very 2 mounths every 2 hours between 04:00:00 and 08:00:00 strating on 5/4/2021");
+        }
+
+        [Fact]
+        public void calculate_monthlt_last_weekendDay()
+        {
+            SchedulerConfiguration configuration = new SchedulerConfiguration
+            {
+                //Scheduler Configuration
+                SchedulerEnable = true,
+                SchedulerType = Domain.Enums.OccursType.Recurring,
+                FrequencyOccurType = Domain.Enums.FrecuencyOccurEveryType.Monthly,
+
+                //Daily Configuration
+                DailyFrecuencyOccursType = Domain.Enums.OccursType.Recurring,
+                DailyFrequencyEvery = 2,
+                DailyFrequencyConfigurationType = Domain.Enums.FrecuencyOccurEveryType.Hour,
+                DailyFrecuencyStarting = 4.Hours(),
+                DailyFrecuencyEnd = 8.Hours(),
+
+                //Monthly Configuration
+                MonthlyFrecuencyByPeriod = true,
+                MonthlyPeriodThe = MonthlyPeriod.Last,
+                MonthlyPeriodDay = MonthlyPeriodDay.WeekendDay,
+                MonthlyPeriodEvery = 2,
+
+                //Limit Configuration
+                StartDate = 5.April(2021),
+
+                CurrentDate = 1.December(2021).At(2, 00, 00)
+            };
+            var result = configuration.CalculateNextDateSerie(6);
+            result.Count.Should().Be(6);
+            result[0].Date.Should().Be(26.December(2021).At(4, 00, 00));
+            result[1].Date.Should().Be(26.December(2021).At(6, 00, 00));
+            result[2].Date.Should().Be(26.December(2021).At(8, 00, 00));
+            result[3].Date.Should().Be(27.February(2022).At(4, 00, 00));
+            result[4].Date.Should().Be(27.February(2022).At(6, 00, 00));
+            result[5].Date.Should().Be(27.February(2022).At(8, 00, 00));
+            result[5].Description.Should().Be(@"Occurs the Last WeekendDay of very 2 mounths every 2 hours between 04:00:00 and 08:00:00 strating on 5/4/2021");
         }
     }
 }
