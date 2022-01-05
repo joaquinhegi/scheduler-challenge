@@ -134,8 +134,7 @@ namespace Domain.Extension
                 throw;
             }
         }
-
-        public static DateTime calculateDateDailyEvery(SchedulerConfiguration schedulerConfiguration)
+        private static DateTime calculateDateDailyEvery(SchedulerConfiguration schedulerConfiguration)
         {
             DateTime resultDate = culcultateNextTime(schedulerConfiguration.CurrentDate,
                                                                  schedulerConfiguration.DailyFrequencyConfigurationType,
@@ -152,18 +151,18 @@ namespace Domain.Extension
             }
             return resultDate;
         }
-        private static DateTime culcultateNextTime(DateTime? CurrentDate, FrecuencyOccurEveryType frecuencyOccurEveryType, int every)
+        private static DateTime culcultateNextTime(DateTime CurrentDate, FrecuencyOccurEveryType frecuencyOccurEveryType, int every)
         {
             try
             {
                 switch (frecuencyOccurEveryType)
                 {
                     case FrecuencyOccurEveryType.Hour:
-                        return ((DateTime)CurrentDate).AddHours(every);
+                        return CurrentDate.AddHours(every);
                     case FrecuencyOccurEveryType.Minute:
-                        return ((DateTime)CurrentDate).AddMinutes(every);
+                        return CurrentDate.AddMinutes(every);
                     case FrecuencyOccurEveryType.Second:
-                        return ((DateTime)CurrentDate).AddSeconds(every);
+                        return CurrentDate.AddSeconds(every);
                     default:
                         throw new ArgumentOutOfRangeException("FrecuencyOccurEveryType is invalid");
                 }
@@ -242,80 +241,7 @@ namespace Domain.Extension
         }
         #endregion
 
-        #region Method Validation
-        private static bool validateMothConfiguration(DayOfWeek dayOfWeek, MonthlyPeriodDay monthlyPeriodDay)
-        {
-            if (monthlyPeriodDay == MonthlyPeriodDay.Day)
-            {
-                return true;
-            }
-            if (monthlyPeriodDay == MonthlyPeriodDay.Weekday && (dayOfWeek != DayOfWeek.Saturday && dayOfWeek != DayOfWeek.Sunday))
-            {
-                return true;
-            }
-            if (monthlyPeriodDay == MonthlyPeriodDay.WeekendDay && (dayOfWeek == DayOfWeek.Saturday || dayOfWeek == DayOfWeek.Sunday))
-            {
-                return true;
-            }
-            if (dayOfWeek == (DayOfWeek)monthlyPeriodDay)
-            {
-                return true;
-            }
-            return false;
-        }
-        private static bool validateMonthlyConfiguration(SchedulerConfiguration schedulerConfiguration)
-        {
-            if (schedulerConfiguration.MonthlyFrecuencyByDay)
-            {
-                if (schedulerConfiguration.CurrentDate.Day != schedulerConfiguration.MonthlyDay)
-                {
-                    return false;
-                }
-            }
-            if (schedulerConfiguration.MonthlyFrecuencyByPeriod)
-            {
-                if ((schedulerConfiguration.MonthlyPeriodDay == MonthlyPeriodDay.Weekday && isWeekendDay(schedulerConfiguration.CurrentDate))
-                    ||
-                    (schedulerConfiguration.MonthlyPeriodDay == MonthlyPeriodDay.WeekendDay && isWeekDay(schedulerConfiguration.CurrentDate))
-                    ||
-                    (schedulerConfiguration.MonthlyPeriodDay == MonthlyPeriodDay.Day && !isDay(schedulerConfiguration.CurrentDate, schedulerConfiguration.MonthlyPeriodThe))
-                    ||
-                    ((int)schedulerConfiguration.MonthlyPeriodDay) < 7 && ((int)schedulerConfiguration.CurrentDate.DayOfWeek) != ((int)schedulerConfiguration.MonthlyPeriodDay))
-                {
-                    return false;
-                }
-            }
-            return true;
-        }
-        public static bool validatDailyFrecuency(TimeSpan Time, TimeSpan? DailyFrecuencyStarting, TimeSpan? DailyFrecuencyEnd)
-        {
-            return (DailyFrecuencyStarting.HasValue == false || Time >= DailyFrecuencyStarting) && (DailyFrecuencyEnd.HasValue == false || Time <= DailyFrecuencyEnd);
-        }
-        private static void validateParameters(SchedulerConfiguration schedulerConfiguration)
-        {
-            if (schedulerConfiguration.DailyFrequencyEvery < 0)
-            {
-                throw new ArgumentOutOfRangeException("This DailyFrequencyEvery parameter cannot be less than zero");
-            }
-            if (schedulerConfiguration.WeeklyEvery < 0)
-            {
-                throw new ArgumentOutOfRangeException("This WeeklyEvery parameter cannot be less than zero");
-            }
-        }
-        private static void checkLimits(DateTime date, DateTime startDate, DateTime? endDate)
-        {
-            if (startDate.CompareTo(date.Date) == 1)
-            {
-                throw new LimitExeption("This current date is less than the start limit");
-            }
-            if (endDate.HasValue && endDate?.CompareTo(date.Date) == -1)
-            {
-                throw new LimitExeption("This current date is greater than the end limit");
-            }
-        }
-        #endregion
-
-        #region Calculate Monthly
+        #region  Calculate Monthly Frecuency
         private static void calculateMonthlyFecuency(SchedulerConfiguration schedulerConfiguration)
         {
 
@@ -363,10 +289,10 @@ namespace Domain.Extension
             DateTime resultDate = schedulerConfiguration.CurrentDate;
             if (resultDate.TimeOfDay < schedulerConfiguration.DailyFrecuencyEnd)
             {
-                resultDate = resultDate.Date.AddHours(schedulerConfiguration.DailyFrecuencyStarting.TotalHours);
+                resultDate = resultDate.Date.Add(schedulerConfiguration.DailyFrecuencyStarting);
                 while (resultDate.TimeOfDay <= schedulerConfiguration.CurrentDate.TimeOfDay)
                 {
-                    resultDate = resultDate.AddHours(schedulerConfiguration.DailyFrequencyEvery);
+                    resultDate = culcultateNextTime(resultDate, schedulerConfiguration.DailyFrequencyConfigurationType, schedulerConfiguration.DailyFrequencyEvery);
                 }
                 if (resultDate.Date == schedulerConfiguration.CurrentDate.Date
                     && validatDailyFrecuency(resultDate.TimeOfDay, schedulerConfiguration.DailyFrecuencyStarting, schedulerConfiguration.DailyFrecuencyEnd))
@@ -418,15 +344,15 @@ namespace Domain.Extension
             }
             return null;
         }
-        public static bool isWeekendDay(DateTime currentDate)
+        private static bool isWeekendDay(DateTime currentDate)
         {
             return currentDate.DayOfWeek == DayOfWeek.Sunday || currentDate.DayOfWeek == DayOfWeek.Saturday;
         }
-        public static bool isWeekDay(DateTime currentDate)
+        private static bool isWeekDay(DateTime currentDate)
         {
             return currentDate.DayOfWeek != DayOfWeek.Sunday && currentDate.DayOfWeek != DayOfWeek.Saturday;
         }
-        public static bool isDay(DateTime currentDate, MonthlyPeriod monthlyPeriod)
+        private static bool isDay(DateTime currentDate, MonthlyPeriod monthlyPeriod)
         {
             if (monthlyPeriod == MonthlyPeriod.Last)
             {
@@ -439,6 +365,92 @@ namespace Domain.Extension
         }
         #endregion
 
+        #region Method Validation
+        private static bool validateMothConfiguration(DayOfWeek dayOfWeek, MonthlyPeriodDay monthlyPeriodDay)
+        {
+            if (monthlyPeriodDay == MonthlyPeriodDay.Day)
+            {
+                return true;
+            }
+            if (monthlyPeriodDay == MonthlyPeriodDay.Weekday && (dayOfWeek != DayOfWeek.Saturday && dayOfWeek != DayOfWeek.Sunday))
+            {
+                return true;
+            }
+            if (monthlyPeriodDay == MonthlyPeriodDay.WeekendDay && (dayOfWeek == DayOfWeek.Saturday || dayOfWeek == DayOfWeek.Sunday))
+            {
+                return true;
+            }
+            if (dayOfWeek == (DayOfWeek)monthlyPeriodDay)
+            {
+                return true;
+            }
+            return false;
+        }
+        private static bool validateMonthlyConfiguration(SchedulerConfiguration schedulerConfiguration)
+        {
+            if (schedulerConfiguration.MonthlyFrecuencyByDay)
+            {
+                if (schedulerConfiguration.CurrentDate.Day != schedulerConfiguration.MonthlyDay)
+                {
+                    return false;
+                }
+            }
+            if (schedulerConfiguration.MonthlyFrecuencyByPeriod)
+            {
+                if ((schedulerConfiguration.MonthlyPeriodDay == MonthlyPeriodDay.Weekday && isWeekendDay(schedulerConfiguration.CurrentDate))
+                    ||
+                    (schedulerConfiguration.MonthlyPeriodDay == MonthlyPeriodDay.WeekendDay && isWeekDay(schedulerConfiguration.CurrentDate))
+                    ||
+                    (schedulerConfiguration.MonthlyPeriodDay == MonthlyPeriodDay.Day && !isDay(schedulerConfiguration.CurrentDate, schedulerConfiguration.MonthlyPeriodThe))
+                    ||
+                    ((int)schedulerConfiguration.MonthlyPeriodDay) < 7 && ((int)schedulerConfiguration.CurrentDate.DayOfWeek) != ((int)schedulerConfiguration.MonthlyPeriodDay))
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+        private static bool validatDailyFrecuency(TimeSpan Time, TimeSpan? DailyFrecuencyStarting, TimeSpan? DailyFrecuencyEnd)
+        {
+            return (DailyFrecuencyStarting.HasValue == false || Time >= DailyFrecuencyStarting) && (DailyFrecuencyEnd.HasValue == false || Time <= DailyFrecuencyEnd);
+        }
+        private static void validateParameters(SchedulerConfiguration schedulerConfiguration)
+        {
+            if (schedulerConfiguration.DailyFrequencyEvery < 0)
+            {
+                throw new ArgumentOutOfRangeException("This DailyFrequencyEvery parameter cannot be less than zero");
+            }
+            if (schedulerConfiguration.WeeklyEvery < 0)
+            {
+                throw new ArgumentOutOfRangeException("This WeeklyEvery parameter cannot be less than zero");
+            }
+            if (schedulerConfiguration.MonthlyDay < 0)
+            {
+                throw new ArgumentOutOfRangeException("This MonthlyDay parameter cannot be less than zero");
+            }
+            if (schedulerConfiguration.MonthlyDayOfEvery < 0)
+            {
+                throw new ArgumentOutOfRangeException("This MonthlyDayOfEvery parameter cannot be less than zero");
+            }
+            if (schedulerConfiguration.MonthlyPeriodEvery < 0)
+            {
+                throw new ArgumentOutOfRangeException("This MonthlyPeriodEvery parameter cannot be less than zero");
+            }    
+        }
+        private static void checkLimits(DateTime date, DateTime startDate, DateTime? endDate)
+        {
+            if (startDate.CompareTo(date.Date) == 1)
+            {
+                throw new LimitExeption("This current date is less than the start limit");
+            }
+            if (endDate.HasValue && endDate?.CompareTo(date.Date) == -1)
+            {
+                throw new LimitExeption("This current date is greater than the end limit");
+            }
+        }
+        #endregion
+
+        #region Method Description
         private static string createDescriptionMonthly(SchedulerConfiguration schedulerConfiguration)
         {
             string description = string.Empty;
@@ -456,7 +468,7 @@ namespace Domain.Extension
             }
 
             description += $" mounth{ (everyMonth > 1 ? "s" : string.Empty)}" +
-            $" every {every} hour{(every > 1 ? "s" : string.Empty)} between {schedulerConfiguration.DailyFrecuencyStarting:t} and {schedulerConfiguration.DailyFrecuencyEnd:t}" +
+            $" every {every} {schedulerConfiguration.DailyFrequencyConfigurationType.ToString().ToLower()}{(every > 1 ? "s" : string.Empty)} between {schedulerConfiguration.DailyFrecuencyStarting:t} and {schedulerConfiguration.DailyFrecuencyEnd:t}" +
             createDescriptionLimit(schedulerConfiguration.StartDate, schedulerConfiguration.EndDate);
 
             return description;
@@ -479,5 +491,6 @@ namespace Domain.Extension
 
             return auxDescription.Insert(auxDescription.Length - positionUltimateComma, "and ");
         }
+        #endregion
     }
 }
