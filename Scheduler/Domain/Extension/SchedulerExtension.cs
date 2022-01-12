@@ -1,8 +1,10 @@
 ﻿using Domain.Entities;
 using Domain.Enums;
 using Domain.Exceptions;
+using Domain.Resources;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -16,9 +18,10 @@ namespace Domain.Extension
         {
             try
             {
+                CultureInfo.CurrentCulture = CultureInfo.CreateSpecificCulture(schedulerConfiguration.Language);
                 if (!schedulerConfiguration.SchedulerEnable)
                 {
-                    throw new SchedulerException("The SchedulerEnable is disabled");
+                    throw new SchedulerException(SchedulerResources.GetResource("SchedulerExceptionDisabled"));
                 }
                 if (schedulerConfiguration.SchedulerType == OccursType.Once)
                 {
@@ -60,7 +63,8 @@ namespace Domain.Extension
 
         private static void calculateShedulerOnce(SchedulerConfiguration schedulerConfiguration)
         {
-            schedulerConfiguration.Description = $"Occurs once. Schedule will be used on {schedulerConfiguration.OnceDateTime:d} at {schedulerConfiguration.OnceDateTime:t}"
+            schedulerConfiguration.Description = String.Format(SchedulerResources.GetResource("OccursOnce"), schedulerConfiguration.OnceDateTime.ToString("d"), schedulerConfiguration.OnceDateTime.ToString("t"))
+                //$"Occurs once. Schedule will be used on {schedulerConfiguration.OnceDateTime:d} at {schedulerConfiguration.OnceDateTime:t}"
                                                  + createDescriptionLimit(schedulerConfiguration.StartDate,
                                                                            schedulerConfiguration.EndDate);
             schedulerConfiguration.Date = schedulerConfiguration.OnceDateTime;
@@ -164,7 +168,7 @@ namespace Domain.Extension
                     case FrecuencyOccurEveryType.Second:
                         return CurrentDate.AddSeconds(every);
                     default:
-                        throw new ArgumentOutOfRangeException("FrecuencyOccurEveryType is invalid");
+                        throw new ArgumentOutOfRangeException(SchedulerResources.GetResource("FrecuencyOccurEveryTypeInvalid"));
                 }
             }
             catch (ArgumentOutOfRangeException ex)
@@ -418,34 +422,34 @@ namespace Domain.Extension
         {
             if (schedulerConfiguration.DailyFrequencyEvery < 0)
             {
-                throw new ArgumentOutOfRangeException("This DailyFrequencyEvery parameter cannot be less than zero");
+                throw new ArgumentOutOfRangeException(SchedulerResources.GetResource("DailyFrequencyEveryParam"));
             }
             if (schedulerConfiguration.WeeklyEvery < 0)
             {
-                throw new ArgumentOutOfRangeException("This WeeklyEvery parameter cannot be less than zero");
+                throw new ArgumentOutOfRangeException(SchedulerResources.GetResource("WeeklyEveryParam"));
             }
             if (schedulerConfiguration.MonthlyDay < 0)
             {
-                throw new ArgumentOutOfRangeException("This MonthlyDay parameter cannot be less than zero");
+                throw new ArgumentOutOfRangeException(SchedulerResources.GetResource("MonthlyDayParam"));
             }
             if (schedulerConfiguration.MonthlyDayOfEvery < 0)
             {
-                throw new ArgumentOutOfRangeException("This MonthlyDayOfEvery parameter cannot be less than zero");
+                throw new ArgumentOutOfRangeException(SchedulerResources.GetResource("MonthlyDayOfEveryParam"));
             }
             if (schedulerConfiguration.MonthlyPeriodEvery < 0)
             {
-                throw new ArgumentOutOfRangeException("This MonthlyPeriodEvery parameter cannot be less than zero");
+                throw new ArgumentOutOfRangeException(SchedulerResources.GetResource("MonthlyPeriodEveryParam"));
             }    
         }
         private static void checkLimits(DateTime date, DateTime startDate, DateTime? endDate)
         {
             if (startDate.CompareTo(date.Date) == 1)
             {
-                throw new LimitExeption("This current date is less than the start limit");
+                throw new LimitExeption(SchedulerResources.GetResource("SrtarDateLimit"));
             }
             if (endDate.HasValue && endDate?.CompareTo(date.Date) == -1)
             {
-                throw new LimitExeption("This current date is greater than the end limit");
+                throw new LimitExeption(SchedulerResources.GetResource("EndDateLimit"));
             }
         }
         #endregion
@@ -475,7 +479,7 @@ namespace Domain.Extension
         }
         private static string createDescriptionLimit(DateTime star, DateTime? end)
         {
-            return $" strating on {star:d}" + (end.HasValue ? $" and end on {end:d}" : string.Empty);
+            return  String.Format(SchedulerResources.GetResource("StratingLimit"),  star.ToString("d"))  + (end.HasValue ? (String.Format(SchedulerResources.GetResource("EndingLimit"), end.Value.ToString("d"))) : string.Empty);
         }
         private static string createDescriptionDayOfWwk(IList<DayOfWeek> listDayOfWeek)
         {

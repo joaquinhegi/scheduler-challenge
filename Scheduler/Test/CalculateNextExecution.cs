@@ -14,22 +14,36 @@ namespace Test
     public class CalculateNextExecution
     {
         [Fact]
-        public void schedulerEnable_false()
+        public void schedulerEnable_false_EN()
         {
             SchedulerConfiguration configuration = new SchedulerConfiguration
             {
-                SchedulerEnable = false,
+                Language = "en-US",
+                SchedulerEnable = false
             };
             Action act = () => configuration.CalculateNextDate();
             act.Should().ThrowExactly<SchedulerException>().WithMessage("The SchedulerEnable is disabled");
         }
 
         [Fact]
-        public void calculate_daily_frecuency_once_exeption_start_date()
+        public void schedulerEnable_false_ES ()
+        {
+            SchedulerConfiguration configuration = new SchedulerConfiguration
+            {
+                Language = "es-ES",
+                SchedulerEnable = false,
+            };
+            Action act = () => configuration.CalculateNextDate();
+            act.Should().ThrowExactly<SchedulerException>().WithMessage("El SchedulerEnable no esta habilitado");
+        }
+
+        [Fact]
+        public void calculate_daily_frecuency_once_exeption_start_date_EN()
         {
             SchedulerConfiguration configuration = new SchedulerConfiguration
             {
                 SchedulerEnable = true,
+                Language = "en-US",
                 SchedulerType = Domain.Enums.OccursType.Recurring,
                 FrequencyOccurType = Domain.Enums.FrecuencyOccurEveryType.Daily,
                 DailyFrecuencyOccursType = Domain.Enums.OccursType.Once,
@@ -41,13 +55,32 @@ namespace Test
             Action act = () => configuration.CalculateNextDate();
             act.Should().ThrowExactly<LimitExeption>().WithMessage("This current date is less than the start limit");
         }
-
         [Fact]
-        public void calculate_daily_frecuency_once_exeption_end_date()
+        public void calculate_daily_frecuency_once_exeption_start_date_ES()
         {
             SchedulerConfiguration configuration = new SchedulerConfiguration
             {
                 SchedulerEnable = true,
+                Language = "es",
+                SchedulerType = Domain.Enums.OccursType.Recurring,
+                FrequencyOccurType = Domain.Enums.FrecuencyOccurEveryType.Daily,
+                DailyFrecuencyOccursType = Domain.Enums.OccursType.Once,
+                DailyFrecuencyOccursOnceAt = 8.Hours(),
+                CurrentDate = 1.January(2020),
+                StartDate = 2.January(2020)
+            };
+
+            Action act = () => configuration.CalculateNextDate();
+            act.Should().ThrowExactly<LimitExeption>().WithMessage("Esta fecha actual es menor que el límite de inicio");
+        }
+
+        [Fact]
+        public void calculate_daily_frecuency_once_exeption_end_date_EN()
+        {
+            SchedulerConfiguration configuration = new SchedulerConfiguration
+            {
+                SchedulerEnable = true,
+                Language = "en",
                 SchedulerType = Domain.Enums.OccursType.Recurring,
                 FrequencyOccurType = Domain.Enums.FrecuencyOccurEveryType.Daily,
                 DailyFrecuencyOccursType = Domain.Enums.OccursType.Once,
@@ -60,13 +93,33 @@ namespace Test
             Action act = () => configuration.CalculateNextDate();
             act.Should().ThrowExactly<LimitExeption>().WithMessage("This current date is greater than the end limit");
         }
-
         [Fact]
-        public void calculate_daily_frecuency_dailyFrequencyEvery_less_zero()
+        public void calculate_daily_frecuency_once_exeption_end_date_ES()
         {
             SchedulerConfiguration configuration = new SchedulerConfiguration
             {
                 SchedulerEnable = true,
+                Language = "es-ES",
+                SchedulerType = Domain.Enums.OccursType.Recurring,
+                FrequencyOccurType = Domain.Enums.FrecuencyOccurEveryType.Daily,
+                DailyFrecuencyOccursType = Domain.Enums.OccursType.Once,
+                DailyFrecuencyOccursOnceAt = 8.Hours(),
+                CurrentDate = 5.January(2020),
+                StartDate = 1.January(2020),
+                EndDate = 4.January(2020),
+            };
+
+            Action act = () => configuration.CalculateNextDate();
+            act.Should().ThrowExactly<LimitExeption>().WithMessage("Esta fecha actual es mayor que el límite final");
+        }
+
+        [Fact]
+        public void calculate_daily_frecuency_dailyFrequencyEvery_less_zero_EN()
+        {
+            SchedulerConfiguration configuration = new SchedulerConfiguration
+            {
+                SchedulerEnable = true,
+                Language = "en",
                 SchedulerType = Domain.Enums.OccursType.Recurring,
                 FrequencyOccurType = Domain.Enums.FrecuencyOccurEveryType.Daily,
 
@@ -87,14 +140,40 @@ namespace Test
         }
 
         [Fact]
-        public void calculate_daily_frecuency_dailyFrequencyConfigurationType_invalid()
+        public void calculate_daily_frecuency_dailyFrequencyEvery_less_zero_ES()
+        {
+            SchedulerConfiguration configuration = new SchedulerConfiguration
+            {
+                SchedulerEnable = true,
+                Language = "es-ES",
+                SchedulerType = Domain.Enums.OccursType.Recurring,
+                FrequencyOccurType = Domain.Enums.FrecuencyOccurEveryType.Daily,
+
+                DailyFrecuencyOccursType = Domain.Enums.OccursType.Recurring,
+                DailyFrequencyEvery = -2,
+                DailyFrequencyConfigurationType = Domain.Enums.FrecuencyOccurEveryType.Hour,
+                DailyFrecuencyStarting = 4.Hours(),
+                DailyFrecuencyEnd = 8.Hours(),
+
+                StartDate = 1.January(2020),
+
+                CurrentDate = 1.January(2020).At(00, 00, 00)
+            };
+
+
+            Action act = () => configuration.CalculateNextDate();
+            act.Should().ThrowExactly<ArgumentOutOfRangeException>().Where(x => x.Message.Contains("El parámetro DailyFrequencyEveryno puede ser menor que cero"));
+        }
+
+        [Fact]
+        public void calculate_daily_frecuency_dailyFrequencyConfigurationType_invalid_EN()
         {
             SchedulerConfiguration configuration = new SchedulerConfiguration
             {
                 SchedulerEnable = true,
                 SchedulerType = Domain.Enums.OccursType.Recurring,
                 FrequencyOccurType = Domain.Enums.FrecuencyOccurEveryType.Daily,
-
+                Language = "en",
                 DailyFrecuencyOccursType = Domain.Enums.OccursType.Recurring,
                 DailyFrequencyEvery = 1800,
                 DailyFrequencyConfigurationType = Domain.Enums.FrecuencyOccurEveryType.Daily,
@@ -111,14 +190,73 @@ namespace Test
             act.Should().ThrowExactly<ArgumentOutOfRangeException>().Where(x => x.Message.Contains("FrecuencyOccurEveryType is invalid"));
 
         }
+        [Fact]
+        public void calculate_daily_frecuency_dailyFrequencyConfigurationType_invalid_ES()
+        {
+            SchedulerConfiguration configuration = new SchedulerConfiguration
+            {
+                SchedulerEnable = true,
+                Language = "es",
+                SchedulerType = Domain.Enums.OccursType.Recurring,
+                FrequencyOccurType = Domain.Enums.FrecuencyOccurEveryType.Daily,
+
+                DailyFrecuencyOccursType = Domain.Enums.OccursType.Recurring,
+                DailyFrequencyEvery = 1800,
+                DailyFrequencyConfigurationType = Domain.Enums.FrecuencyOccurEveryType.Daily,
+                DailyFrecuencyStarting = 4.Hours(),
+                DailyFrecuencyEnd = 8.Hours(),
+
+                StartDate = 1.January(2020),
+
+                CurrentDate = 1.January(2020).At(00, 00, 00)
+            };
+
+
+            Action act = () => configuration.CalculateNextDate();
+            act.Should().ThrowExactly<ArgumentOutOfRangeException>().Where(x => x.Message.Contains("FrecuencyOccurEveryType no es válida"));
+
+        }
 
         [Fact]
-        public void calculate_weekly_frecuency_weeklyEvery_less_zero()
+        public void calculate_weekly_frecuency_weeklyEvery_less_zero_ES()
         {
             SchedulerConfiguration configuration = new SchedulerConfiguration
             {
                 //Scheduler Configuration
                 SchedulerEnable = true,
+                Language = "es",
+                SchedulerType = Domain.Enums.OccursType.Recurring,
+                FrequencyOccurType = Domain.Enums.FrecuencyOccurEveryType.Weekly,
+
+                //Daily Configuration
+                DailyFrecuencyOccursType = Domain.Enums.OccursType.Recurring,
+                DailyFrequencyEvery = 2,
+                DailyFrequencyConfigurationType = Domain.Enums.FrecuencyOccurEveryType.Hour,
+                DailyFrecuencyStarting = 4.Hours(),
+                DailyFrecuencyEnd = 8.Hours(),
+
+                //Weekly Configuration
+                WeeklyEvery = -1,
+                DaysWeek = new List<DayOfWeek>() { DayOfWeek.Monday, DayOfWeek.Tuesday, DayOfWeek.Friday },
+
+                //Limit Configuration
+                StartDate = 1.November(2021),
+
+                CurrentDate = 12.November(2021).At(04, 00, 00)
+            };
+
+            Action act = () => configuration.CalculateNextDate();
+            act.Should().ThrowExactly<ArgumentOutOfRangeException>().Where(x => x.Message.Contains("El parámetro WeeklyEvery no puede ser menor que cero"));
+        }
+
+        [Fact]
+        public void calculate_weekly_frecuency_weeklyEvery_less_zero_EN()
+        {
+            SchedulerConfiguration configuration = new SchedulerConfiguration
+            {
+                //Scheduler Configuration
+                SchedulerEnable = true,
+                Language = "en",
                 SchedulerType = Domain.Enums.OccursType.Recurring,
                 FrequencyOccurType = Domain.Enums.FrecuencyOccurEveryType.Weekly,
 
@@ -166,21 +304,62 @@ namespace Test
         }
 
         [Fact]
-        public void calculate_type_once()
+        public void calculate_type_once_ES()
         {
             SchedulerConfiguration configuration = new SchedulerConfiguration
             {
                 SchedulerEnable = true,
+                Language = "es",
                 SchedulerType = Domain.Enums.OccursType.Once,
                 OnceDateTime = 10.January(2020).At(14, 00),
                 StartDate = 1.January(2020),
+                EndDate = 1.January(2021)
             };
 
             var result = configuration.CalculateNextDate();
 
             result.Date.Should().Be(10.January(2020).At(14, 00));
-            result.Description.Should().Be("Occurs once. Schedule will be used on 10/1/2020 at 14:00 strating on 1/1/2020");
+            result.Description.Should().Be("Ocurre una vez. El dia 10/01/2020 a las 14:00 a partir del 01/01/2020 y finalizará el 01/01/2021");
         }
+
+        [Fact]
+        public void calculate_type_once_EN_US()
+        {
+            SchedulerConfiguration configuration = new SchedulerConfiguration
+            {
+                SchedulerEnable = true,
+                Language = "en-EU",
+                SchedulerType = Domain.Enums.OccursType.Once,
+                OnceDateTime = 10.March(2020).At(14, 00),
+                StartDate = 1.March(2020),
+                EndDate = 1.January(2021)
+            };
+
+            var result = configuration.CalculateNextDate();
+
+            result.Date.Should().Be(10.March(2020).At(14, 00));
+            result.Description.Should().Be("Occurs once. Schedule will be used on 3/10/2020 at 2:00 PM strating on 3/1/2020 and end on 1/1/2021");                                           
+        }
+
+        [Fact]
+        public void calculate_type_once_EN_GB()
+        {
+            SchedulerConfiguration configuration = new SchedulerConfiguration
+            {
+                SchedulerEnable = true,
+                Language = "en-GB",
+                SchedulerType = Domain.Enums.OccursType.Once,
+                OnceDateTime = 10.March(2020).At(14, 00),
+                StartDate = 1.March(2020),
+                EndDate = 1.January(2021)
+            };
+
+            var result = configuration.CalculateNextDate();
+
+            result.Date.Should().Be(10.March(2020).At(14, 00));
+            result.Description.Should().Be("Occurs once. Schedule will be used on 10/03/2020 at 14:00 strating on 01/03/2020 and end on 01/01/2021");                                          
+        }
+
 
         [Fact]
         public void calculate_daily_frecuency_once_at()
@@ -689,12 +868,13 @@ namespace Test
         }
   
         [Fact]
-        public void calculate_monthlyDayOfEvery_monthlyDay_less_zero()
+        public void calculate_monthlyDayOfEvery_monthlyDay_less_zero_EN()
         {
             SchedulerConfiguration configuration = new SchedulerConfiguration
             {
                 //Scheduler Configuration
                 SchedulerEnable = true,
+                Language = "en",
                 SchedulerType = Domain.Enums.OccursType.Recurring,
                 FrequencyOccurType = Domain.Enums.FrecuencyOccurEveryType.Monthly,
 
@@ -705,14 +885,34 @@ namespace Test
             Action act = () => configuration.CalculateNextDate();
             act.Should().ThrowExactly<ArgumentOutOfRangeException>().Where(x => x.Message.Contains("This MonthlyDayOfEvery parameter cannot be less than zero"));
         }
-        
+
         [Fact]
-        public void calculate_monthlyPeriodEvery_monthlyDay_less_zero()
+        public void calculate_monthlyDayOfEvery_monthlyDay_less_zero_ES()
         {
             SchedulerConfiguration configuration = new SchedulerConfiguration
             {
                 //Scheduler Configuration
                 SchedulerEnable = true,
+                Language = "es",
+                SchedulerType = Domain.Enums.OccursType.Recurring,
+                FrequencyOccurType = Domain.Enums.FrecuencyOccurEveryType.Monthly,
+
+                //Monthly Configuration
+                MonthlyDayOfEvery = -1,
+            };
+
+            Action act = () => configuration.CalculateNextDate();
+            act.Should().ThrowExactly<ArgumentOutOfRangeException>().Where(x => x.Message.Contains("El parámetro MonthlyDayOfEvery no puede ser menor que cero"));
+        }
+
+        [Fact]
+        public void calculate_monthlyPeriodEvery_monthlyDay_less_zero_EN()
+        {
+            SchedulerConfiguration configuration = new SchedulerConfiguration
+            {
+                //Scheduler Configuration
+                SchedulerEnable = true,
+                Language = "en",
                 SchedulerType = Domain.Enums.OccursType.Recurring,
                 FrequencyOccurType = Domain.Enums.FrecuencyOccurEveryType.Monthly,
 
@@ -723,7 +923,24 @@ namespace Test
             Action act = () => configuration.CalculateNextDate();
             act.Should().ThrowExactly<ArgumentOutOfRangeException>().Where(x => x.Message.Contains("This MonthlyPeriodEvery parameter cannot be less than zero"));
         }
+        [Fact]
+        public void calculate_monthlyPeriodEvery_monthlyDay_less_zero_ES()
+        {
+            SchedulerConfiguration configuration = new SchedulerConfiguration
+            {
+                //Scheduler Configuration
+                SchedulerEnable = true,
+                Language = "es",
+                SchedulerType = Domain.Enums.OccursType.Recurring,
+                FrequencyOccurType = Domain.Enums.FrecuencyOccurEveryType.Monthly,
 
+                //Monthly Configuration
+                MonthlyPeriodEvery = -1,
+            };
+
+            Action act = () => configuration.CalculateNextDate();
+            act.Should().ThrowExactly<ArgumentOutOfRangeException>().Where(x => x.Message.Contains("El parámetro MonthlyPeriodEvery no puede ser menor que cero"));
+        }
         [Fact]
         public void calculate_monthlt_frecuencybydat_day_every()
         {
