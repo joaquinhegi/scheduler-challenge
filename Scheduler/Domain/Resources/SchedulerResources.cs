@@ -87,6 +87,85 @@ namespace Domain.Resources
                     { spanishLanguage, "Ocurre una vez. El dia {0} a las {1}" }
                 }
             },
+            { "OccursDailyEvery", new Dictionary<CultureInfo, string>()
+                {
+                    { englishLanguage, "Occurs every {0} {1} on day between {2} at {3}" },
+                    { spanishLanguage, "Ocurre cada {0} {1} al día entre {2} y las {3}" }
+                }
+            },
+            { "OccursWeeklyEvery", new Dictionary<CultureInfo, string>()
+                {
+                    { englishLanguage, "Occurs every {0} week{1} on {2} every {3} {4}{5} between {6} at {7}{8}" },
+                    { spanishLanguage, "Ocurre cada {0} semana{1} los dia {2} cada {3} {4}{5} entre {6} y las {7}{8}" }
+                }
+            },
+            { "Second", new Dictionary<CultureInfo, string>()
+                {
+                    { englishLanguage, "Second" },
+                    { spanishLanguage, "Segundo" }
+                }
+            },
+            { "Minute", new Dictionary<CultureInfo, string>()
+                {
+                    { englishLanguage, "Minute" },
+                    { spanishLanguage, "Minuto" }
+                }
+            },
+            { "Hour", new Dictionary<CultureInfo, string>()
+                {
+                    { englishLanguage, "Hour" },
+                    { spanishLanguage, "Hora" }
+                }
+            },
+            { "Monday", new Dictionary<CultureInfo, string>()
+                {
+                    { englishLanguage, "Monday" },
+                    { spanishLanguage, "Lunes" }
+                }
+            },
+            { "Tuesday", new Dictionary<CultureInfo, string>()
+                {
+                    { englishLanguage, "Tuesday" },
+                    { spanishLanguage, "Martes" }
+                }
+            },
+            { "Wednesday", new Dictionary<CultureInfo, string>()
+                {
+                    { englishLanguage, "Wednesday" },
+                    { spanishLanguage, "Miercoles" }
+                }
+            },
+            { "Thursday", new Dictionary<CultureInfo, string>()
+                {
+                    { englishLanguage, "Thursday" },
+                    { spanishLanguage, "Jueves" }
+                }
+            },
+            { "Friday", new Dictionary<CultureInfo, string>()
+                {
+                    { englishLanguage, "Friday" },
+                    { spanishLanguage, "Viernes" }
+                }
+            },
+            { "Saturday", new Dictionary<CultureInfo, string>()
+                {
+                    { englishLanguage, "Saturday" },
+                    { spanishLanguage, "Sabado" }
+                }
+            },
+            { "Sunday", new Dictionary<CultureInfo, string>()
+                {
+                    { englishLanguage, "Sunday" },
+                    { spanishLanguage, "Domingo" }
+                }
+            }
+            ,
+            { "And", new Dictionary<CultureInfo, string>()
+                {
+                    { englishLanguage, "and" },
+                    { spanishLanguage, "y" }
+                }
+            }
         };
 
 
@@ -104,6 +183,10 @@ namespace Domain.Resources
                 value = resources[keyResource][englishLanguage];
             }
             return value;
+        }
+        public static string FormatToTimeSpam(TimeSpan time)
+        {
+            return DateTime.Today.Add(time).ToString("t");
         }
     }
 }
