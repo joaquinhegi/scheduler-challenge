@@ -18,7 +18,7 @@ namespace Domain.Extension
         {
             try
             {
-                CultureInfo.CurrentCulture = CultureInfo.CreateSpecificCulture(schedulerConfiguration.Language);
+                setCulture(schedulerConfiguration);
                 if (!schedulerConfiguration.SchedulerEnable)
                 {
                     throw new SchedulerException(SchedulerResources.GetResource("SchedulerExceptionDisabled"));
@@ -44,6 +44,12 @@ namespace Domain.Extension
                 throw;
             }
         }
+
+        private static void setCulture(SchedulerConfiguration schedulerConfiguration)
+        {
+            CultureInfo.CurrentCulture = CultureInfo.CreateSpecificCulture(schedulerConfiguration.Language);
+        }
+
         public static IList<SchedulerConfiguration> CalculateNextDateSerie(this SchedulerConfiguration schedulerConfiguration, int quantity)
         {
             IList<SchedulerConfiguration> listSchConfiguration = new List<SchedulerConfiguration>();
@@ -467,25 +473,46 @@ namespace Domain.Extension
         #region Method Description
         private static string createDescriptionMonthly(SchedulerConfiguration schedulerConfiguration)
         {
-            string description = string.Empty;
-            int everyMonth;
-            int every = schedulerConfiguration.DailyFrequencyEvery;
             if (schedulerConfiguration.MonthlyFrecuencyByDay)
             {
-                everyMonth = schedulerConfiguration.MonthlyDayOfEvery;
-                description = $"Occurs on day {schedulerConfiguration.MonthlyDay} every {everyMonth}";
+                return createDescriptionMonthlyFrecuencyByDay(schedulerConfiguration);
             }
             else
             {
-                everyMonth = schedulerConfiguration.MonthlyPeriodEvery;
-                description = $"Occurs the {schedulerConfiguration.MonthlyPeriodThe} {schedulerConfiguration.MonthlyPeriodDay} of very {everyMonth}";
+                return createDescriptionMonthlyFrecuencyByPeriod(schedulerConfiguration);
             }
+        }
 
-            description += $" mounth{ (everyMonth > 1 ? "s" : string.Empty)}" +
-            $" every {every} {schedulerConfiguration.DailyFrequencyConfigurationType.ToString().ToLower()}{(every > 1 ? "s" : string.Empty)} between {schedulerConfiguration.DailyFrecuencyStarting:t} and {schedulerConfiguration.DailyFrecuencyEnd:t}" +
-            createDescriptionLimit(schedulerConfiguration.StartDate, schedulerConfiguration.EndDate);
-
-            return description;
+        private static string createDescriptionMonthlyFrecuencyByDay(SchedulerConfiguration schedulerConfiguration)
+        {
+            int every = schedulerConfiguration.DailyFrequencyEvery;
+            return String.Format(SchedulerResources.GetResource("MonthlyFrecuencyByDay"),
+                        schedulerConfiguration.MonthlyDay,
+                        schedulerConfiguration.MonthlyDayOfEvery,
+                        (schedulerConfiguration.MonthlyDayOfEvery > 1 ? SchedulerResources.GetResource("s") : string.Empty),
+                        every,
+                        SchedulerResources.GetResource(schedulerConfiguration.DailyFrequencyConfigurationType.ToString()).ToLower(),
+                        (every > 1 ? "s" : string.Empty),
+                        SchedulerResources.FormatToTimeSpam(schedulerConfiguration.DailyFrecuencyStarting),
+                        SchedulerResources.FormatToTimeSpam(schedulerConfiguration.DailyFrecuencyEnd),
+                        createDescriptionLimit(schedulerConfiguration.StartDate, schedulerConfiguration.EndDate)
+                    );
+        }
+        private static string createDescriptionMonthlyFrecuencyByPeriod(SchedulerConfiguration schedulerConfiguration)
+        {
+            int every = schedulerConfiguration.DailyFrequencyEvery;
+            return String.Format(SchedulerResources.GetResource("MonthlyFrecuencyByPeriod"),
+                 SchedulerResources.GetResource(schedulerConfiguration.MonthlyPeriodThe.ToString()),
+                 SchedulerResources.GetResource(schedulerConfiguration.MonthlyPeriodDay.ToString()),
+                 schedulerConfiguration.MonthlyPeriodEvery,
+                 (schedulerConfiguration.MonthlyPeriodEvery > 1 ? SchedulerResources.GetResource("s") : string.Empty),
+                 every,
+                 SchedulerResources.GetResource(schedulerConfiguration.DailyFrequencyConfigurationType.ToString()).ToLower(),
+                 (every > 1 ? "s" : string.Empty),
+                 SchedulerResources.FormatToTimeSpam(schedulerConfiguration.DailyFrecuencyStarting),
+                 SchedulerResources.FormatToTimeSpam(schedulerConfiguration.DailyFrecuencyEnd),
+                 createDescriptionLimit(schedulerConfiguration.StartDate, schedulerConfiguration.EndDate)
+                );
         }
         private static string createDescriptionLimit(DateTime star, DateTime? end)
         {
