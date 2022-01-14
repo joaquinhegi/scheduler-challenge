@@ -2,12 +2,14 @@
 using Domain.Exceptions;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 
 namespace Domain.Entities
 {
     public class SchedulerConfiguration
     {
         public bool SchedulerEnable { get; set; }
+        public string Language { get; set; } = CultureInfo.CurrentCulture.Name;
         public OccursType SchedulerType { get; set; }
         public FrecuencyOccurEveryType FrequencyOccurType { get; set; }
         public DateTime CurrentDate { get; set; } = DateTime.Now;
